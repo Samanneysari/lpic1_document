@@ -688,6 +688,38 @@ find / -size +10M -size -50M
 ```
 find / cmin -30
 ```
+11. **`join`**: Combines lines from two files based on a common field.
+   - **Example**: Join two files (`file1.txt` and `file2.txt`) on their first column
+```
+join file1.txt file2.txt
+```
+12. **`split** : Breaks a file into smaller pieces.
+    - **Example**: Split bigfile.txt into 100-line chunks, named part-
+```
+split -l 100 bigfile.txt part-
+```
+13. **`tac** : Displays a file’s lines in reverse order (opposite of cat).
+   - **Example**: Reverse the lines of notes.txt
+```
+tac notes.txt
+```
+14. **`tee`** : Sends output to both a file and the screen (or another command).
+   - **Example**: Save ls output to a file while displaying it
+```
+ls -l | tee output.txt
+```
+15. **`whereis`** : Locates the binary, source, and manual page files for a command.
+   - **Example**: Find where bash is installed
+```
+whereis bash
+```
+## Archive and Compress
+Archiving and compression are key skills in Linux for managing files—whether you’re trying to save space, bundle files together, or share them with others. In this section, we’ll explore what archiving and compression mean, and dive into tools like zip, gzip, and unzip.
+
+* **Archiving**: This is when you combine multiple files or directories into a single file—like putting everything into one big box. Examples include .tar or .zip files. It’s great for organizing or transferring files.
+* **Compression**: This shrinks a file’s size to save space, kind of like vacuum-sealing that box. Some tools do both archiving and compression, while others focus just on compression.
+
+
 
 
 
