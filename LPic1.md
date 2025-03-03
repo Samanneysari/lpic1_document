@@ -503,3 +503,40 @@ When you no longer need access to the file system, you can unmount it using the 
 sudo umount /mnt
 ```
 This detaches the file system from the mount point, making the partition inaccessible until it’s mounted again.
+
+
+## Argument
+In Linux, when you type a command into the terminal, it’s often made up of several parts: the command itself and its arguments. Arguments are additional pieces of information you provide to tell the command what to do or what to work on. Understanding arguments is a key skill for using the Linux command line effectively
+Arguments are the words or symbols that follow a command, separated by spaces. They can be:
+
+* **Options/Flags** : Modify how the command behaves (e.g., -l in ls -l).
+* **Operands** : Specify what the command should act on (e.g., /boot in ls /boot).
+
+In programming terms (like in shell scripts), arguments are numbered starting from 0:
+
+* **Argument 0** : The command itself.
+* **Argument 1, 2, etc.** : The options or operands that follow.
+
+```
+ls -l /boot
+```
+* **ls** : The command (argument 0). It lists directory contents.
+* **-l** : An option (argument 1). It tells ls to use a long, detailed listing format.
+* **/boot** : An operand (argument 2). It specifies the directory to list.
+
+## Files
+In Linux, everything is treated as a file—whether it’s a document, a directory, or even a piece of hardware. However, these "files" come in different types, each serving a unique purpose. Understanding these file types is essential for navigating and managing a Linux system effectively. Let’s explore the main types of files you’ll encounter.
+You can use the ls -l command to see a file’s type. The first character in the output tells you what kind of file it is. For example:
+```
+ls -l
+```
+
+| File Type         | Symbol | Example             | Purpose                          |
+|-------------------|--------|---------------------|----------------------------------|
+| Regular File      | `-`    | `notes.txt`         | Stores data (text, binaries)     |
+| Directory         | `d`    | `/home`             | Organizes other files            |
+| Symbolic Link     | `l`    | `python -> python3` | Points to another file           |
+| Block Device      | `b`    | `/dev/sda`          | Represents block-based devices   |
+| Character Device  | `c`    | `/dev/tty`          | Represents character-based devices |
+| Named Pipe        | `p`    | `mypipe`            | Inter-process communication      |
+| Socket            | `s`    | `mysqld.sock`       | Network/local communication      |
