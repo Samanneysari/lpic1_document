@@ -58,7 +58,8 @@ refers to the highest level of access or control within the system. It’s a fun
 #### 3. root as root's home directiory
 #### 4. root as a group
 ## Directories
-The Linux operating system organizes its files in a hierarchical structure known as the Filesystem Hierarchy Standard (FHS). Below is a comprehensive list of the main directories in Linux, along with their definitions:
+The Filesystem Hierarchy Standard (FHS) is a set of guidelines that defines the structure and organization of files and directories in Unix-like operating systems, such as Linux. Its primary goal is to ensure consistency across different distributions, making it easier for users, administrators, and software to locate and manage files in a predictable way.
+Below is a comprehensive list of the main directories in Linux, along with their definitions:
 * **/**: The root directory, serving as the top-level directory of the file system hierarchy. All other directories and files reside under this directory.
 * **/bin**: Contains essential user command binaries (executable files) such as ls, cp, and mv, which are necessary for basic system operation and accessible to all users.
 *  **/boot**: Holds static files required for booting the system, including the Linux kernel and bootloader configuration files (e.g., GRUB).
@@ -228,6 +229,11 @@ su root
 ```
 echo "salam" > f1.text
 ```
+* **cat** : reading files
+```
+cat f1.text
+```
+
 ## alias
 An alias in Linux is a shortcut for a command or a group of commands, allowing users to create custom, simplified command names for frequently used commands.
 ```
@@ -379,6 +385,9 @@ unload a module from the kernel
 ```
 sudo rmmod module_name
 ```
+### Runlevel
+A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
+Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
 
 | Runlevel | Description                     | Purpose                          |
 |----------|---------------------------------|----------------------------------|
@@ -389,5 +398,108 @@ sudo rmmod module_name
 | 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
 | 6        | Reboot                          | Restarts the system              |
 
+* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
+
+* Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
+
+To find out the current runlevel of your Linux system, use:
+```
+runlevel
+```
+#### Runlevels in systemd (Modern Linux Distributions)
+
+| Traditional Runlevel | systemd Target      |
+|----------------------|---------------------|
+| 0                    | poweroff.target     |
+| 1                    | rescue.target       |
+| 2, 3                 | multi-user.target   |
+| 5                    | graphical.target    |
+| 6                    | reboot.target       |
+
+Checking Current Runlevel (Target) in systemd:
+```
+systemctl get-default
+```
+## Partitioning
+Partitioning is the process of dividing a hard drive into separate sections, called partitions. Think of it like splitting a big room into smaller rooms, where each room can have its own purpose. In Linux, partitioning is an important step when setting up a system because it helps you organize your data and manage how your hard drive is used.
+In Linux, there are a few types of partitions you need to know about:
+
+* **Primary Partitions**: These are the main sections of your hard drive. You can have up to four primary partitions on a single drive.
+* **Extended Partitions**: If you need more than four partitions, you can create an extended partition. This acts like a container that holds extra partitions inside it.
+* **Logical Partitions**: These are the extra partitions you create inside an extended partition. They let you go beyond the four-partition limit.
 
 
+#### 1. To create partitions in Linux, you can use a tool called **fdisk**
+```
+sudo fdisk /dev/sda
+```
+* sudo: Gives you permission to make changes.
+* /dev/sda: This is your hard drive (it might be /dev/sdb or something else on your system).
+
+#### 2. Create a New Partition:
+* Press n and hit Enter to make a new partition.
+* Choose p for a primary partition.
+* Pick a number (1-4) for your partition.
+* Set the size by choosing starting and ending points. (You can usually just press Enter to use the defaults and fill the space.)
+
+To see what partitions are already on your system, you can use these commands:
+```
+sudo fdisk -l
+```
+a simple tree view of your drives and partitions
+```
+lsblk
+```
+#### File system
+After creating partitions, they aren’t ready to use yet—you need to format them with a file system. A file system defines how data is stored, organized, and retrieved on the partition. In Linux, popular file systems include ext4, XFS, and Btrfs. Formatting is the process of applying a file system to a partition, making it ready to store files.
+
+A file system is like a blueprint for how data is arranged on a partition. It manages files, directories, and permissions, ensuring that the operating system can read and write data efficiently.
+* **ext4** : The most common and reliable choice for general use. It’s the default for many Linux distributions.
+* **XFS** : Great for handling large files and high-performance storage needs.
+* **Btrfs** : Offers advanced features like snapshots and data integrity checks, useful for more complex setups
+
+To format a partition with a file system, you can use the mkfs (make file system) command. Here’s how to format a partition as ext4:
+
+* 1. Identify Your Partition: Make sure you know the correct partition name, such as /dev/sda1. You can check this with lsblk or sudo fdisk -l.
+* 2. Format the Partition: Run the following command:
+```
+sudo mkfs.ext4 /dev/sda1
+```
+After formatting, you can verify the file system’s integrity using the fsck (file system check) command:
+```
+sudo fsck /dev/sda1
+```
+If fsck reports that the file system is "clean," everything is in order.
+
+
+#### Mounting
+Once a partition is formatted with a file system, it’s ready to store data—but you still need to mount it to access it. Mounting attaches the file system to a directory (like /mnt/data), making it part of the Linux directory structure so you can read and write files.
+Mounting is the process of linking a file system to a specific directory, called a mount point. Once mounted, you can access the files on that partition through the mount point directory.
+To mount a partition temporarily (until the next reboot), use the mount command:
+```
+sudo mount /dev/sda1 /mnt
+```
+For the mount to persist across reboots, you need to add an entry to the /etc/fstab file:
+```
+sudo vim /etc/fstab
+```
+Add a Line for Your Partition:
+```
+UUID=xxxx /mnt ext4 defaults 0 2
+```
+* UUID=xxxx: Replace xxxx with the UUID of your partition (you can find it with blkid /dev/sda1).
+* /mnt: The mount point.
+* ext4: The file system type.
+* defaults: Standard mount options.
+* 0 2: Settings for backup and file system check order.
+
+After editing /etc/fstab, you can mount the partition with:
+```
+sudo mount -a
+```
+#### Unmounting a File System
+When you no longer need access to the file system, you can unmount it using the umount command:
+```
+sudo umount /mnt
+```
+This detaches the file system from the mount point, making the partition inaccessible until it’s mounted again.
