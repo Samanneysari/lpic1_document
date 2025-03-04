@@ -693,12 +693,12 @@ find / cmin -30
 ```
 join file1.txt file2.txt
 ```
-12. **`split** : Breaks a file into smaller pieces.
+12. **`split`** : Breaks a file into smaller pieces.
     - **Example**: Split bigfile.txt into 100-line chunks, named part-
 ```
 split -l 100 bigfile.txt part-
 ```
-13. **`tac** : Displays a file’s lines in reverse order (opposite of cat).
+13. **`tac`** : Displays a file’s lines in reverse order (opposite of cat).
    - **Example**: Reverse the lines of notes.txt
 ```
 tac notes.txt
@@ -713,11 +713,113 @@ ls -l | tee output.txt
 ```
 whereis bash
 ```
+16. **`shutdown`**: Safely powers off, reboots, or halts the system with a specified time and optional message.
+   - **Example**: Shut down the system immediately.
+```
+shutdown -h now
+```
+   - **Example**: reboot in 10 Minutes with a Message
+```
+shutdown -r +10 "System rebooting for maintenance"
+```
+
+
 ## Archive and Compress
 Archiving and compression are key skills in Linux for managing files—whether you’re trying to save space, bundle files together, or share them with others. In this section, we’ll explore what archiving and compression mean, and dive into tools like zip, gzip, and unzip.
 
 * **Archiving**: This is when you combine multiple files or directories into a single file—like putting everything into one big box. Examples include .tar or .zip files. It’s great for organizing or transferring files.
 * **Compression**: This shrinks a file’s size to save space, kind of like vacuum-sealing that box. Some tools do both archiving and compression, while others focus just on compression.
+
+1. **zip**:  is a tool that both archives and compresses files or directories into a .zip file. It’s widely used because .zip files are compatible with many systems (Linux, Windows, etc.).
+
+
+- **Example**: Compress a Single File:
+```
+zip notes.zip notes.txt
+```
+- **Example**: Compress multiple Files: Bundles file1.txt and file2.txt into backup.zip
+```
+zip backup.zip file1.txt file2.txt
+```
+- **Example**: Compress a Directory: -r (recursive) includes all files and subdirectories in documents/ into docs.zip.
+```
+zip -r docs.zip documents/
+```
+2. **gzip**: compresses individual files, replacing them with a .gz version. Unlike zip, it doesn’t archive multiple files into one—it works on one file at a time. Reduces file size and adds a .gz extension, deleting the original unless specified otherwise.
+- **Example**: Compress a file and Keep the Original
+```
+gzip -k log.txt
+```
+- **Example**: Compress with Maximum Compression:
+```
+gzip -9 bigfile.txt
+```
+3. **unzip**: extracts files from a .zip archive, decompressing them and restoring the original files or directories. Reads the .zip file and unpacks its contents to your current directory (or a specified location).
+
+- **Example**: Unpacks all files from backup.zip into the current directory.
+```
+unzip backup.zip
+```
+- **Example**: Extract to a Specific Folder
+```
+unzip docs.zip -d myfolder/
+```
+4. **Archive**: Since gzip only compresses single files, it’s often paired with tar for archiving multiple files
+- **Example**: Create a .tar.gz (tar and gzip)
+```
+tar -czf archive.tar.gz documents/
+```
+- **Example**: Extract a .tar.gz
+```
+tar -xzf archive.tar.gz
+```
+## Wildcards
+Wildcards (also known as "globbing") in Linux are special characters used to represent or match other characters in filenames or commands. They allow you to work with multiple files at once without typing each name individually, acting like a search filter directly in your terminal. Wildcards are processed by the shell (e.g., Bash), not the commands themselves. When you use a wildcard, the shell expands it into a list of matching files before passing them to the command.
+
+There are three main wildcards in Linux:
+
+* 1. *(Asterisk): The * wildcard matches any number of characters, including zero. It’s the most flexible and widely used wildcard. It can match part of a filename or an entire filename
+- **Example**: List all .txt files:
+```
+ls *.txt
+```
+- **Example**: List all files starting with "log":
+```
+ls log*
+```
+
+* 2. ? (Question Mark): matches exactly one character—any character, but only one. It’s useful when you know the length of a filename but not the exact characters
+- **Example**: List two-letter files:
+```
+ls ??
+```
+
+* 3. (Square Brackets) []: let you specify a set or range of characters to match at a specific position. You can list individual characters (e.g., [abc]) or a range (e.g., [a-c] for a, b, or c).
+- **Example**: List files starting with "a", "b", or "c"
+```
+ls [abc]*
+```
+- **Example**: List files with a digit in the second position
+```
+ls ?[0-9].txt
+```
+- **Example**: List files ending with "a" or "b":
+```
+ls *.[ab]
+```
+- **Example**: List files starting with "data", followed by one character, ending with ".txt"
+```
+ls data?.txt
+```
+- **Example**: Copy Multiple Files
+```
+cp *.txt backup/
+```
+- **Example**: Lists all .log files in /var/log
+```
+ls /var/log/*.log
+```
+
 
 
 
