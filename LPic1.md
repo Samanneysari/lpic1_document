@@ -911,49 +911,85 @@ Below is an example output of the free -h command, followed by a detailed explan
 | **Mem:** | 7.7G | 1.2G | 5.5G | 0.0K | 1.0G | 6.3G |
 | **Swap:** | 2.0G | 0.0K | 2.0G | - | - | - |
 
-Mem Row (Physical RAM)
+1. Mem Row (Physical RAM)
 total
-Value: 7.7G
-Meaning: The total amount of physical RAM installed on the system.
-Explanation: In this example, the system has 7.7 gigabytes of RAM available. This is the total capacity of physical memory, excluding any reserved by the hardware or kernel.
-used
-Value: 1.2G
-Meaning: The amount of RAM currently in use by running processes.
-Explanation: Here, 1.2 gigabytes of RAM are actively being used by applications and the operating system. This does not include memory used for buffers or cache (explained later).
-free
-Value: 5.5G
-Meaning: The amount of RAM that is currently unused and immediately available for new processes.
-Explanation: In this case, 5.5 gigabytes of RAM are free. However, in modern Linux systems, free memory might appear low because unused RAM is often utilized for caching to improve performance.
-shared
-Value: 0.0K
-Meaning: The amount of RAM used by shared memory segments, accessible by multiple processes.
-Explanation: Shared memory is typically used for inter-process communication (IPC). In this example, no memory (0 kilobytes) is allocated for shared segments, which is common unless specific applications require it.
-buff/cache
-Value: 1.0G
-Meaning: The amount of RAM used for buffers and cache.
-Explanation:
-Buffers: Temporary storage for data being transferred, such as between disk and RAM.
-Cache: Storage for frequently accessed data (e.g., file system cache) to speed up retrieval.
+
+**Value**: 7.7G
+
+**Meaning**: The total amount of physical RAM installed on the system.
+
+**Explanation**: In this example, the system has 7.7 gigabytes of RAM available. This is the total capacity of physical memory, excluding any reserved by the hardware or kernel.
+
+* 1.1used
+
+**Value**: 1.2G
+
+**Meaning**: The amount of RAM currently in use by running processes.
+
+**Explanation**: Here, 1.2 gigabytes of RAM are actively being used by applications and the operating system. This does not include memory used for buffers or cache (explained later).
+
+* 1.2 free
+
+**Value**: 5.5G
+
+**Meaning**: The amount of RAM that is currently unused and immediately available for new processes.
+
+**Explanation**: In this case, 5.5 gigabytes of RAM are free. However, in modern Linux systems, free memory might appear low because unused RAM is often utilized for caching to improve performance.
+
+* 1.3 shared
+
+**Value**: 0.0K
+
+**Meaning**: The amount of RAM used by shared memory segments, accessible by multiple processes.
+
+**Explanation**: Shared memory is typically used for inter-process communication (IPC). In this example, no memory (0 kilobytes) is allocated for shared segments, which is common unless specific applications require it.
+
+* 1.4 buff/cache
+
+**Value**: 1.0G
+
+**Meaning**: The amount of RAM used for buffers and cache.
+
+**Buffers**: Temporary storage for data being transferred, such as between disk and RAM.
+
+**Cache**: Storage for frequently accessed data (e.g., file system cache) to speed up retrieval.
+
 Here, 1.0 gigabyte is used for these purposes. This memory can be quickly reclaimed by the system if new processes need it, so it’s not permanently "taken."
-available
-Value: 6.3G
-Meaning: The amount of RAM available for starting new applications without needing to use swap.
-Explanation: This is a more practical indicator of usable memory than the "free" column. It includes free memory (5.5G) plus memory that can be freed from buffers and cache. In this case, 6.3 gigabytes are available, showing the system has ample memory for new tasks.
-Swap Row (Swap Space)
+
+* 1.5 available
+
+**Value**: 6.3G
+
+**Meaning**: The amount of RAM available for starting new applications without needing to use swap.
+
+**Explanation**: This is a more practical indicator of usable memory than the "free" column. It includes free memory (5.5G) plus memory that can be freed from buffers and cache. In this case, 6.3 gigabytes are available, showing the system has ample memory for new tasks.
+
+1. Swap Row (Swap Space)
 The Swap row has fewer columns, focusing on swap space (disk-based virtual memory):
 
-total
-Value: 2.0G
-Meaning: The total amount of swap space allocated on the disk.
+* 2.1 total
+
+**Value**: 2.0G
+
+**Meaning**: The total amount of swap space allocated on the disk.
+
 Explanation: This system has 2.0 gigabytes of swap space, which acts as an overflow when physical RAM is full.
-used
-Value: 0.0K
-Meaning: The amount of swap space currently in use.
-Explanation: Here, no swap space (0 kilobytes) is being used, indicating that the system isn’t relying on slower disk storage, which is good for performance.
-free
-Value: 2.0G
-Meaning: The amount of swap space that is currently unused.
-Explanation: All 2.0 gigabytes of swap are free, meaning the system has not needed to use swap yet.
+
+* 2.2 used
+
+**Value**: 0.0K
+
+**Meaning**: The amount of swap space currently in use.
+
+**Explanation**: Here, no swap space (0 kilobytes) is being used, indicating that the system isn’t relying on slower disk storage, which is good for performance.
+
+* 2.3 free
+
+**Value**: 2.0G
+
+**Meaning**: The amount of swap space that is currently unused.
+
+**Explanation**: All 2.0 gigabytes of swap are free, meaning the system has not needed to use swap yet.
 
 
 
