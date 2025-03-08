@@ -83,6 +83,87 @@ Below is a comprehensive list of the main directories in Linux, along with their
 *  **/var**: Stores variable data files that change during system operation, such as log files (/var/log), mail spools, and other persistent temporary files.
   
 These directories form the backbone of the Linux file system, ensuring a standardized structure across different distributions. While additional directories like /sys (for kernel and device information) or /run (for runtime data) may appear in modern systems, the ones listed above are the core directories defined by the FHS. Note that the exact contents or usage of some directories may vary slightly depending on the specific Linux distribution.
+## Init
+The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
+
+* **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
+* **Upstart** : Improved handling of dependencies between services and could substantially improve system startup time. It is not concerned with runlevels, but with system events. Job definition files are located in the /etc/init directory.
+* **Systemd** : Used by the latest versions of Fedora and RHEL. It manages services, sockets, devices, mount points, swap areas, and other unit types. It is concerned with runlevels, but they are called target units
+```
+systemctl --version
+```
+The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
+
+
+* **Service**: Manages daemons on a Linux server. Service unit names end with .service.
+* **Target**: Groups other units together. Target unit names end with .target. Systemd uses target units instead of runlevels.
+* **Automount** : Automatically mounts filesystems.
+* **Device**: Represents a device.
+* **Mount**: Defines mount points.
+* **Path**
+* **Snapshot**
+* **Socket**
+* **scope**
+* **slice**
+* **swap**
+* **timer**
+```
+systemctl list-units
+```
+### Kernel Madules
+A Linux Kernel Module (LKM) is a piece of code that can be dynamically loaded and unloaded into the Linux kernel without requiring a system reboot. These modules extend the functionality of the kernel, allowing it to support new hardware, filesystems, and features without modifying the core system.
+* **Modularity**: New functionalities can be added to the kernel as needed.
+* **Resource Optimization**: Modules are only loaded when required, reducing system overhead.
+* **Flexibility**: No need to recompile or restart the system to add/remove features.
+* **Ease of Maintenance**: Modules can be updated or replaced without affecting the running kernel.
+
+Listing Loaded Modules
+```
+lsmod
+```
+Loading a Module
+```
+sudo modprobe module_name
+```
+unload a module from the kernel
+```
+sudo rmmod module_name
+```
+### Runlevel
+A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
+Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
+
+| Runlevel | Description                     | Purpose                          |
+|----------|---------------------------------|----------------------------------|
+| 0        | Halt                            | Shuts down the system           |
+| 1        | Single-user mode                | Maintenance mode                 |
+| 2        | Multi-user mode (no network)    | Basic multi-user mode            |
+| 3        | Multi-user mode with networking | Full CLI-based multi-user mode   |
+| 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
+| 6        | Reboot                          | Restarts the system              |
+
+* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
+
+* Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
+
+To find out the current runlevel of your Linux system, use:
+```
+runlevel
+```
+#### Runlevels in systemd (Modern Linux Distributions)
+
+| Traditional Runlevel | systemd Target      |
+|----------------------|---------------------|
+| 0                    | poweroff.target     |
+| 1                    | rescue.target       |
+| 2, 3                 | multi-user.target   |
+| 5                    | graphical.target    |
+| 6                    | reboot.target       |
+
+Checking Current Runlevel (Target) in systemd:
+```
+systemctl get-default
+```
 ## User and Group Management
 * **New User**
 ```
@@ -126,6 +207,7 @@ passwd -u saman
 ```
 
 ### When you use useradd saman: 
+
 * **1. Check if there is any user like saman in /etc/passwd**
 * **2. Assign first free UID to the user**
 * **3. Create a group with the same username and Assign first free GID**
@@ -154,7 +236,7 @@ passwd -u saman
            name.
 
 ## Shadowing
-* In Linux, shadowing is a security feature that stores user passwords in a separate file (/etc/shadow) instead of the publicly readable /etc/passwd file. This prevents unauthorized users from accessing password hashes.
+In Linux, shadowing is a security feature that stores user passwords in a separate file (/etc/shadow) instead of the publicly readable /etc/passwd file. This prevents unauthorized users from accessing password hashes.
 * Before Shadowing: Password hashes were stored in /etc/passwd, which was world-readable.
 * After Shadowing: Passwords are moved to /etc/shadow, which only root can access.
 * /etc/shadow contains hashed passwords, expiration settings, and account policies.
@@ -402,6 +484,32 @@ The sticky bit is a special permission that prevents users from deleting files t
 If set, you will see a t at the end of the permissions:
 
       drwxrwxrwt  10 root root  4096 Mar 2 10:00 /shared_folder/
+
+### 6. umask
+The umask command in Linux sets the default permissions for new files and directories you create. It acts like a filter, determining which permissions are not granted by default, ensuring your files and folders start with the right level of access.
+* **`Files`**: start with maximum permissions of 666 (read and write for owner, group, and others).
+* **`Directories`** start with 777 (read, write, and execute for all).
+* **`The umask value`** (a three-digit number, e.g., 022) masks out specific permissions.
+
+#### Example: umask 022
+##### New files: 666 - 022 = 644 (rw-r--r--)
+* **`Owner`**: read/write
+* **`Group/Others`**: read only
+
+##### New directories: 777 - 022 = 755 (rwxr-xr-x)
+* **`Owner`**: full access
+* **`Group/Others`**: read and execute
+#### Checking and Setting umask
+##### Check current umask: Output might be 0022 (leading zero is optional).
+```
+umask
+```
+
+##### Set a new umask: Files become 664 (rw-rw-r--), directories 775 (rwxrwxr-x), allowing group write access.
+```
+umask 002
+```
+
 
 ## Networking
 
@@ -786,7 +894,100 @@ join f1.txt f2.txt
 ```
 uptime
 ```
+## Services
+### 1. What is a Service?
+A service, often called a daemon, is a program that runs in the background, independent of any terminal or user session. Unlike interactive applications, services start automatically (often at boot) and don’t need user input to function. A long-running process that delivers a specific function, such as handling network requests or logging system events.
 
+### 2. How Services Are Managed: Init Systems
+Services are controlled by the init system, the first process started by the Linux kernel during boot (with process ID 1). The init system oversees starting, stopping, and managing all other processes, including services. Two primary init systems are used in Linux:
+
+* **`SysVinit`**: The traditional init system found in older distributions.
+* **`systemd`**: The modern init system adopted by most current distributions (e.g., Ubuntu, Fedora, CentOS).
+
+### 3. Managing Services with systemd
+systemd is the modern init system that has largely replaced SysVinit. It manages services through units (e.g., .service files) and provides a consistent command-line tool, systemctl.
+
+#### Start a Service:
+```
+sudo systemctl start service_name
+```
+#### Stop a Service:
+```
+sudo systemctl stop service_name
+```
+#### Restart a Service:
+```
+sudo systemctl restart service_name
+```
+#### Enable a Service (auto-start on boot):
+```
+sudo systemctl enable service_name
+```
+#### Disable a Service (prevent auto-start):
+```
+sudo systemctl disable service_name
+```
+#### Check Service Status:
+```
+sudo systemctl status service_name
+```
+
+### 4. Key Differences Between SysVinit and systemd
+
+| Feature         | SysVinit                          | systemd                              |
+|----------------|----------------------------------|--------------------------------------|
+| **Control Command** | `/etc/init.d/service_name action` | `systemctl action service_name`      |
+| **Service Files**   | Scripts in `/etc/init.d/`    | Unit files (e.g., `/etc/systemd/system/`) |
+| **Boot Process**    | Sequential startup          | Parallel startup (faster)            |
+| **Logging**        | Stored in `/var/log/`        | Managed by `journald` (view with `journalctl`) |
+| **Dependencies**   | Manually defined in scripts  | Automatically managed by unit files  |
+
+### 5. Monitoring and Troubleshooting Services
+#### 5.1 Checking Service Status
+```
+sudo systemctl status service_name
+```
+#### 5.2 Viewing Service Logs
+```
+sudo journalctl -u apache2
+```
+## system log
+
+System logs are records of events and activities on a Linux system. They help administrators monitor performance, troubleshoot issues, and detect security problems. Logs are typically stored as text files and managed by a logging service.
+
+### Key Logging Tools and Files
+* **`/var/log`**: The default directory where most log files are stored.
+* **`syslog or rsyslog`**: A common logging daemon that collects and writes log messages to files.
+* **`journalctl`**: A tool for viewing logs managed by systemd’s journal system (modern Linux distributions).
+### Common Log Files
+* **`/var/log/syslog or /var/log/messages`**: General system logs (varies by distribution).
+* **`/var/log/auth.log or /var/log/secure`**: Authentication-related logs (e.g., login attempts).
+* **`/var/log/kern.log`**: Kernel-related messages.
+* **`/var/log/dpkg.log`**: Logs for Debian-based package management (e.g., apt).
+
+#### Examples
+
+1. Viewing the Last 10 Lines of a Log File:
+```
+tail -n 10 /var/log/syslog
+```
+
+2. Monitoring Logs in Real-Time:
+```
+tail -f /var/log/auth.log
+```
+3. Using journalctl to View All Logs:
+```
+journalctl
+```
+4. Filtering Logs by Service:
+```
+journalctl -u sshd
+```
+5. Use grep to search logs:
+```
+grep "error" /var/log/syslog
+```
 
 ## Archive and Compress
 Archiving and compression are key skills in Linux for managing files—whether you’re trying to save space, bundle files together, or share them with others. In this section, we’ll explore what archiving and compression mean, and dive into tools like zip, gzip, and unzip.
@@ -1291,124 +1492,7 @@ ls -l report_link
 | **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
 
-## system log
 
-System logs are records of events and activities on a Linux system. They help administrators monitor performance, troubleshoot issues, and detect security problems. Logs are typically stored as text files and managed by a logging service.
-
-### Key Logging Tools and Files
-* **`/var/log`**: The default directory where most log files are stored.
-* **`syslog or rsyslog`**: A common logging daemon that collects and writes log messages to files.
-* **`journalctl`**: A tool for viewing logs managed by systemd’s journal system (modern Linux distributions).
-### Common Log Files
-* **`/var/log/syslog or /var/log/messages`**: General system logs (varies by distribution).
-* **`/var/log/auth.log or /var/log/secure`**: Authentication-related logs (e.g., login attempts).
-* **`/var/log/kern.log`**: Kernel-related messages.
-* **`/var/log/dpkg.log`**: Logs for Debian-based package management (e.g., apt).
-
-#### Examples
-
-1. Viewing the Last 10 Lines of a Log File:
-```
-tail -n 10 /var/log/syslog
-```
-
-2. Monitoring Logs in Real-Time:
-```
-tail -f /var/log/auth.log
-```
-3. Using journalctl to View All Logs:
-```
-journalctl
-```
-4. Filtering Logs by Service:
-```
-journalctl -u sshd
-```
-5. Use grep to search logs:
-```
-grep "error" /var/log/syslog
-```
-## Init
-The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
-
-* **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
-* **Upstart** : Improved handling of dependencies between services and could substantially improve system startup time. It is not concerned with runlevels, but with system events. Job definition files are located in the /etc/init directory.
-* **Systemd** : Used by the latest versions of Fedora and RHEL. It manages services, sockets, devices, mount points, swap areas, and other unit types. It is concerned with runlevels, but they are called target units
-```
-systemctl --version
-```
-The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
-
-
-* **Service**: Manages daemons on a Linux server. Service unit names end with .service.
-* **Target**: Groups other units together. Target unit names end with .target. Systemd uses target units instead of runlevels.
-* **Automount** : Automatically mounts filesystems.
-* **Device**: Represents a device.
-* **Mount**: Defines mount points.
-* **Path**
-* **Snapshot**
-* **Socket**
-* **scope**
-* **slice**
-* **swap**
-* **timer**
-```
-systemctl list-units
-```
-### kernel madules
-A Linux Kernel Module (LKM) is a piece of code that can be dynamically loaded and unloaded into the Linux kernel without requiring a system reboot. These modules extend the functionality of the kernel, allowing it to support new hardware, filesystems, and features without modifying the core system.
-* **Modularity**: New functionalities can be added to the kernel as needed.
-* **Resource Optimization**: Modules are only loaded when required, reducing system overhead.
-* **Flexibility**: No need to recompile or restart the system to add/remove features.
-* **Ease of Maintenance**: Modules can be updated or replaced without affecting the running kernel.
-
-Listing Loaded Modules
-```
-lsmod
-```
-Loading a Module
-```
-sudo modprobe module_name
-```
-unload a module from the kernel
-```
-sudo rmmod module_name
-```
-### Runlevel
-A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
-Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
-
-| Runlevel | Description                     | Purpose                          |
-|----------|---------------------------------|----------------------------------|
-| 0        | Halt                            | Shuts down the system           |
-| 1        | Single-user mode                | Maintenance mode                 |
-| 2        | Multi-user mode (no network)    | Basic multi-user mode            |
-| 3        | Multi-user mode with networking | Full CLI-based multi-user mode   |
-| 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
-| 6        | Reboot                          | Restarts the system              |
-
-* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
-
-* Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
-
-To find out the current runlevel of your Linux system, use:
-```
-runlevel
-```
-#### Runlevels in systemd (Modern Linux Distributions)
-
-| Traditional Runlevel | systemd Target      |
-|----------------------|---------------------|
-| 0                    | poweroff.target     |
-| 1                    | rescue.target       |
-| 2, 3                 | multi-user.target   |
-| 5                    | graphical.target    |
-| 6                    | reboot.target       |
-
-Checking Current Runlevel (Target) in systemd:
-```
-systemctl get-default
-```
 
 
 
