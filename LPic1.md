@@ -368,15 +368,9 @@ If set, you will see a t at the end of the permissions:
 
       drwxrwxrwt  10 root root  4096 Mar 2 10:00 /shared_folder/
 
-### journalctl
-The journalctl command is a utility used to view messages from the systemd journal. The systemd journal collects status and error messages from the boot process, the kernel, and all systemd-managed services.
 
-* View all messages in the systemd journal.
-* List boot IDs for each system boot.
-* View messages associated with a particular boot instance using the -b option along with a boot instance ID.
-* Display only kernel messages using the -k option
 
-### Init
+## Init
 The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
 
 * **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
@@ -1312,8 +1306,43 @@ ls -l report_link
 | **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
 
+## system log
 
+System logs are records of events and activities on a Linux system. They help administrators monitor performance, troubleshoot issues, and detect security problems. Logs are typically stored as text files and managed by a logging service.
 
+### Key Logging Tools and Files
+* **`/var/log`**: The default directory where most log files are stored.
+* **`syslog or rsyslog`**: A common logging daemon that collects and writes log messages to files.
+* **`journalctl`**: A tool for viewing logs managed by systemd’s journal system (modern Linux distributions).
+### Common Log Files
+* **`/var/log/syslog or /var/log/messages`**: General system logs (varies by distribution).
+* **`/var/log/auth.log or /var/log/secure`**: Authentication-related logs (e.g., login attempts).
+* **`/var/log/kern.log`**: Kernel-related messages.
+* **`/var/log/dpkg.log`**: Logs for Debian-based package management (e.g., apt).
+
+#### Examples
+
+1. Viewing the Last 10 Lines of a Log File:
+```
+tail -n 10 /var/log/syslog
+```
+
+2. Monitoring Logs in Real-Time:
+```
+tail -f /var/log/auth.log
+```
+3. Using journalctl to View All Logs:
+```
+journalctl
+```
+4. Filtering Logs by Service:
+```
+journalctl -u sshd
+```
+5. Use grep to search logs:
+```
+grep "error" /var/log/syslog
+```
 
 
 
