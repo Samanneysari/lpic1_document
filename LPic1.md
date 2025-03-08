@@ -1,6 +1,10 @@
 # Linux Lpic 1
 ## Operating System
-An operating system (OS) is system software that manages computer hardware, and software resources, and provides common services for computer programs. It sits on top of the hardware and manages the resources when other software (Sometimes called an userspace program) asks for it.
+An operating system (OS) is the vital software that powers up your computer and keeps it running smoothly. Picture it as the conductor of an orchestra, directing all the parts of your machine—like the processor, memory, and storage—so they work together without missing a beat. Without this software, your computer would just be a collection of lifeless hardware, unable to run apps or follow your instructions.
+
+At its heart, the OS is the behind-the-scenes organizer. It juggles tasks like deciding which program gets attention from the CPU, keeping your files in order, and making sure everything hums along without tripping over itself. Plus, it’s what lets you actually use your computer, whether that’s through a friendly screen with icons and windows or a text-based setup where you type commands.
+
+Simply put, the operating system is the backbone that makes your computer work for you. It ties your hardware to your apps, manages all the moving pieces, and keeps things flowing so you can do what you need to do.
 ## Firmware
 Firmware is the software on your hardware that runs it; Think of it as a built-in OS or driver for your hardware. Motherboards need some firmware to be able to work too.
 Firmware is a type of software that lives in hardware. Software is any program or group of programs run by a computer.
@@ -233,6 +237,39 @@ echo "salam" > f1.text
 ```
 cat f1.text
 ```
+## stat 
+
+stat is a command-line tool that reveals the status of a file or directory by displaying its key attributes. These attributes include:
+
+* File permissions
+* Ownership (user and group)
+* File size
+* Timestamps (access, modification, and change times)
+* Inode number
+* Number of hard links
+* Device and filesystem information
+
+Unlike commands like `ls`, which provide a summary of file properties, `stat` offers a more comprehensive and structured view of a file's metadata.
+
+```
+stat example.txt
+```
+* **`File`**: The name of the file or directory.
+* **`Size`**: The size of the file in bytes (e.g., 1024 bytes).
+* **`Blocks`**: The number of disk blocks allocated to the file.
+* **`IO Block`**: The size of each block on the filesystem (e.g., 4096 bytes).
+* **`regular file`**: The type of the file (e.g., regular file, directory, symbolic link).
+* **`Device`**: The device number where the file resides (in hexadecimal and decimal).
+* **`Inode`**: The inode number, a unique identifier for the file on the filesystem.
+* **`Links`**: The number of hard links pointing to this file.
+* **`Access`**: The file's permissions in octal (0644) and symbolic (-rw-r--r--) notation.
+* **`Uid`**: The user ID and username of the file's owner.
+* **`Gid`**: The group ID and group name of the file's owner.
+* **`Access`**: The last time the file was accessed (read).
+* **`Modify`**: The last time the file's content was modified.
+* **`Change`**: The last time the file's metadata (e.g., permissions) was changed.
+* **`Birth`**: The creation time of the file (not always available on all filesystems).
+
 
 ## alias
 An alias in Linux is a shortcut for a command or a group of commands, allowing users to create custom, simplified command names for frequently used commands.
@@ -1179,7 +1216,100 @@ nice -n 10 ffmpeg -i input.mp4 output.mp4
 sudo nice -n -5 important_task.sh
 ```
 
+- **Example**: Check a Process’s Nice Value: 3955
+```
+ps -o pid,ni -p 3955
+```
 
+- **Example**: Lower the Priority of a Running Process: Changes the nice value of process ID 5678 to 15, reducing its priority.
+```
+renice -n 15 -p 5678
+```
+
+#### Points
+
+* A regular user can only change the nice value between 0 and +19.
+(In Linux, the nice value determines the priority of a process. Higher nice values mean lower priority.)
+
+* Only the root user can set a process's nice value to a negative number.
+(Negative nice values increase the priority of a process, allowing it to get more CPU time.)
+
+* A regular user cannot increase the priority of a process. This means if a user changes a process's nice value from 0 to 4, they cannot later change it back to 2 (a lower nice value) because it would increase the priority.
+(Only root can lower the nice value, which effectively raises the process priority.)
+
+* Process priority becomes relevant only when there is contention, meaning when multiple processes are competing for system resources.
+(If there is no resource contention, nice values have no practical effect because all processes get enough CPU time.)
+
+## Hard Links and Soft Links in Linux
+
+In Linux, links provide a way to reference files or directories from multiple locations without duplicating the data. There are two main types of links: `hardlinks` and `softlinks` (symbolic links). Understanding their differences and use cases is essential for effective file management, whether you’re organizing files, performing backups, or administering a system.
+
+### 1. What is a Link?
+A link is a pointer to a file or directory. It allows you to access the same data using multiple filenames, making file management more efficient without creating redundant copies.
+
+* **`Hard Link`**: A direct reference to the file’s data on the disk.
+* **`Soft Link (Symlink)`**: A reference to another filename, which then points to the data.
+
+### 2. Hard Links
+A hard link is an additional name for an existing file. It directly references the file’s data via its inode—a data structure in the filesystem that stores metadata (like permissions and ownership) and points to the file’s data blocks on the disk. When you create a hard link, both the original filename and the new hard link point to the same inode and data.
+
+Key Characteristics of Hard Links:
+
+* **`Same Inode`**: The hard link and the original file share the same inode number.
+* **`No "Original" File`**: There’s no distinction between the original and the hard link—they’re equal references to the same data.
+* **`Filesystem Limitation`**: Hard links can only be created within the same filesystem.
+* **`Files Only`**: Hard links are typically for files, not directories (though root users can link directories, it’s rare and not recommended).
+* **`Data Persistence`**: The data remains on the disk as long as at least one hard link exists. Deleting one link doesn’t affect the others or the data.
+
+* Use the ln command without options:
+
+```
+ln report.txt report_backup.txt
+```
+Now, report.txt and report_backup.txt are two names for the same file. Editing one changes the other because they share the same data.
+
+
+* Use ls -i to display inode numbers
+```
+ls -i report.txt report_backup.txt
+```
+### 3. Soft Links (Symbolic Links)
+A soft link (or symbolic link) is a special type of file that points to another file or directory by its path. Unlike a hard link, a soft link doesn’t reference the data directly—it points to the target’s filename, which then resolves to the data. This makes symlinks more flexible but also prone to becoming "broken" if the target is moved or deleted.
+
+Key Characteristics of Soft Links:
+
+* **`Separate Inode`**: The symlink has its own inode, distinct from the target file’s inode.
+* **`Cross-Filesystem Support`**: Symlinks can point to files or directories on different filesystems, including network locations.
+* **`Directories Allowed`**: Symlinks can link to both files and directories.
+* **`Broken Links`**: If the target file or directory is deleted or moved, the symlink becomes broken and points to nothing.
+* **`Permissions`**: The symlink’s permissions are independent, but access to the target is governed by the target’s permissions.
+
+- **Example**: file
+```
+ln -s report.txt report_link
+```
+- **Example**: directory
+```
+ln -s /var/log logs
+```
+Now, logs is a symlink to /var/log. You can use cd logs to access /var/log.
+
+
+* Use ls -l to view the link and its target:
+```
+ls -l report_link
+```
+### 4. Key Differences Between Hard Links and Soft Links
+
+| Feature            | Hard Link                          | Soft Link (Symlink)                |
+|--------------------|----------------------------------|------------------------------------|
+| **Inode**         | Shares the same inode as the original | Has its own inode                  |
+| **Points To**     | Directly to the data blocks      | To the filename (path)            |
+| **Cross Filesystems** | No, limited to the same filesystem | Yes, can span filesystems          |
+| **Can Link Directories** | No (generally)                 | Yes                                |
+| **Effect of Deleting** | Data persists if other hard links exist | Becomes broken if target is deleted |
+| **Permissions**   | Same as the original file       | Independent, but target controls access |
+| **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
 
 
