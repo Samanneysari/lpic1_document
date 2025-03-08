@@ -722,6 +722,54 @@ shutdown -h now
 ```
 shutdown -r +10 "System rebooting for maintenance"
 ```
+17. **`uname -r`**: Displays the kernel release version of the Linux system.
+   - **Example**: 
+```
+uname -r 
+```
+18. **`hostnamectl`**: Manages and displays system hostname and related information.
+   - **Example**: 
+```
+hostnamectl
+```
+   - **Example**: set hostname
+```
+sudo hostnamectl set-hostname newname
+```
+19. **`expr`**: Evaluates expressions and performs basic arithmetic or string operations.
+   - **Example**: 
+```
+expr 5 + 3
+```
+20.  **`export`**: The export command in Linux is used to make variables available to other programs or processes that you run from your current shell session. In simpler terms, it’s like giving a variable a "passport" so it can travel beyond the shell you’re working in and be used by other commands, scripts, or applications you launch.
+   - **Example**: 
+```
+export NAME="Alice"
+echo "My name is $NAME"
+```
+21. **`whatis`**: Displays a one-line description of a command from its manual page.
+   - **Example**: 
+```
+whatis ls
+```
+22. **`uniq`**: Filters out duplicate lines from sorted input or a file.
+   - **Example**: 
+
+```
+echo -e "apple\napple\nbanana" | uniq
+```
+23. **`join`**: Combines lines from two files based on a common field.
+   - **Example**: 
+* File1 (f1.txt): 1 apple
+* File2 (f2.txt): 1 red
+```
+join f1.txt f2.txt
+```
+24. **`uptime`**: Shows how long the system has been running and current load averages.
+   - **Example**: 
+```
+uptime
+```
 
 
 ## Archive and Compress
