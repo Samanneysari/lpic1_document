@@ -14,47 +14,47 @@ So, BIOS is a tiny little program that lives on a chip inside your computer. Whe
 Once it’s done with that quick check, BIOS says, “Alright, everything looks good!” and passes the job over to the operating system (you know, like Windows or macOS). That’s the main software that lets you do all the fun stuff—browsing the internet, playing games, or typing up a document.
 ## UEFI
 UEFI stands for Unified Extensible Firmware Interface. It’s the newer, improved version of BIOS. Like BIOS, UEFI runs when you turn on your computer and checks the hardware. But it does this faster, so your computer starts up more quickly. UEFI can work with larger hard drives (perfect for storing lots of files) and has extras like Secure Boot. Secure Boot checks that only trusted software runs at startup, helping protect your computer from viruses or malware. UEFI is also easier to update and often has a nicer interface (sometimes even with mouse support!).
-## Key Differences Between BIOS and UEFI
-### Speed: UEFI boots your computer faster than BIOS.
-### Storage: UEFI supports bigger hard drives; BIOS has limits and struggles with modern sizes.
-### Security: UEFI has Secure Boot to block bad software; BIOS doesn’t.
-### Look and Feel: UEFI can have a graphical interface; BIOS is usually plain text and harder to navigate.
+### Key Differences Between BIOS and UEFI
+* **`Speed`**: UEFI boots your computer faster than BIOS.
+* **`Storage`**: UEFI supports bigger hard drives; BIOS has limits and struggles with modern sizes.
+* **`Security`**: UEFI has Secure Boot to block bad software; BIOS doesn’t.
+* **`Look and Feel`**: UEFI can have a graphical interface; BIOS is usually plain text and harder to navigate.
 ## Bootloader
 A bootloader is a small but essential program that runs when you turn on your computer. Its main job is to find the operating system (like Windows, macOS, or Linux) on your hard drive and load it into the computer’s memory. Once the operating system is loaded, it takes control, allowing you to use your computer.
 Think of the bootloader as the starting whistle in a race. When you press the power button, your computer doesn’t know what to do on its own—it needs a guide. The bootloader acts as that guide, getting the operating system ready to run.
-### GRUB: Commonly used for Linux.
-### Windows Boot Manager: Used for Windows
+* **`GRUB`**: Commonly used for Linux.
+* **`Windows Boot Manager`**: Used for Windows
 ## Boot Process
 ### 1. Power On
 The power supply sends electricity to the motherboard, which "wakes up" the system and starts the boot process.
 ### 2. BIOS or UEFI Initialization
 BIOS: Runs a Power-On Self-Test (POST) to check essential hardware like the CPU, RAM, and storage devices.
 UEFI: Does a similar hardware check but faster, with added features like Secure Boot to ensure only trusted software runs.
-#### Purpose: Confirms that all critical hardware is functioning before moving forward.
+* **`Purpose`**: Confirms that all critical hardware is functioning before moving forward.
 ### 3. Bootloader Activation
 For BIOS, it looks in the Master Boot Record (MBR) on the storage device.
 For UEFI, it checks the EFI System Partition (ESP).
-#### Purpose: Prepares the system to load the operating system by finding the bootloader.
+* **`Purpose`**:Prepares the system to load the operating system by finding the bootloader.
 ### 4. Bootloader Execution
 Examples include GRUB (common for Linux) or Windows Boot Manager (for Windows).
 If there’s only one OS, it skips the menu and moves forward automatically.
-#### Purpose: Allows you to choose an operating system (if applicable) and starts loading it.
+* **`Purpose`**: Allows you to choose an operating system (if applicable) and starts loading it.
 ### 5. Operating System Loading
 The kernel is the core of the operating system, responsible for managing hardware and software interactions.
 The bootloader hands control over to the kernel to begin the OS startup.
-#### Purpose: Begins the process of getting the operating system up and running.
+* **`Purpose`**: Begins the process of getting the operating system up and running.
 ### 6. Kernel Initialization
 It sets up hardware drivers (e.g., for your graphics card, network adapter, etc.).
 It mounts the root file system, which contains all the necessary files for the OS to operate.
-#### Purpose: Prepares the system to handle applications and services.
+* **`Purpose`**: Prepares the system to handle applications and services.
 ### 7. System Services and User Interface
 Services like networking, printing, and security systems are launched.
 Depending on the OS, either a graphical user interface (GUI) or a command-line interface (CLI) appears.
-#### Purpose: Makes the computer fully functional and ready for interaction.
+* **`Purpose`**: Makes the computer fully functional and ready for interaction.
 ### 8. Login Screen or Desktop
 The operating system is now completely loaded and operational.
 You can log in and start using the computer.
-#### Purpose: The system is ready for you to work, browse, or do whatever you need!
+* **`Purpose`**: The system is ready for you to work, browse, or do whatever you need!
 ## Root
 refers to the highest level of access or control within the system. It’s a fundamental concept that appears in several key areas, each with its own specific meaning
 #### 1. Root as a Superuser
@@ -140,6 +140,7 @@ passwd -u saman
 * **2. Assign first free GID to the group**
 * **3. add a new record in the route /etc/passwd with the same group name**
 ### Man Useradd
+
 * **-d** : the new user will be created using HOME_DIR as the value for the user's login directory. The default is to append the LOGIN
            name to BASE_DIR and use that as the login directory name. If the directory HOME_DIR does not exist, then it will be created
            unless the -M option is specified.
@@ -152,12 +153,12 @@ passwd -u saman
 * **-c** : Any text string. It is generally a short description of the account, and is currently used as the field for the user's full
            name.
 
-### Shadowing
-##### In Linux, shadowing is a security feature that stores user passwords in a separate file (/etc/shadow) instead of the publicly readable /etc/passwd file. This prevents unauthorized users from accessing password hashes.
-##### Before Shadowing: Password hashes were stored in /etc/passwd, which was world-readable.
-##### After Shadowing: Passwords are moved to /etc/shadow, which only root can access.
-##### /etc/shadow contains hashed passwords, expiration settings, and account policies.
-##### Improves security by preventing regular users from reading password hashes.
+## Shadowing
+* In Linux, shadowing is a security feature that stores user passwords in a separate file (/etc/shadow) instead of the publicly readable /etc/passwd file. This prevents unauthorized users from accessing password hashes.
+* Before Shadowing: Password hashes were stored in /etc/passwd, which was world-readable.
+* After Shadowing: Passwords are moved to /etc/shadow, which only root can access.
+* /etc/shadow contains hashed passwords, expiration settings, and account policies.
+* Improves security by preventing regular users from reading password hashes.
 
 ## ls
 The ls command in Linux is used to list the contents of a directory. It displays files and directories with various details depending on the options used
@@ -270,6 +271,40 @@ stat example.txt
 * **`Change`**: The last time the file's metadata (e.g., permissions) was changed.
 * **`Birth`**: The creation time of the file (not always available on all filesystems).
 
+## Package Management
+Package management involves tools and systems that install, update, and remove software packages (precompiled programs and their dependencies).
+
+### Debian-Based (e.g., Ubuntu):
+* **`dpkg`**: Low-level tool for handling .deb packages.
+* **`apt`**: High-level tool for managing packages and repositories.
+### Red Hat-Based (e.g., CentOS, Fedora):
+* **`rpm`**: Low-level tool for handling .rpm packages.
+* **`yum or dnf`**: High-level tools for managing packages and repositories (dnf is the newer version of yum).
+
+#### Update
+
+The update command refreshes your system’s list of available packages and their versions by syncing with the repositories you’ve configured. It updates the local package database but does not install or modify any software on your system.
+
+```
+sudo apt update
+```
+#### Upgrade
+The upgrade command updates all currently installed packages to their latest versions based on the repository data (which requires a prior update). It downloads and installs newer versions of software already on your system but does not add new packages or remove existing ones.
+
+```
+sudo apt upgrade
+```
+#### Install
+The install command adds a specific package (or packages) to your system that isn’t currently installed. It downloads the package and its dependencies and sets them up. If the package is already installed, install can sometimes be used to reinstall it or upgrade it to a specific version (with additional options).
+```
+sudo apt install htop
+```
+
+| Command  | Purpose                               | Affects Installed Software? | Adds New Packages? | Requires Update First? |
+|----------|---------------------------------------|----------------------------|---------------------|------------------------|
+| update   | Syncs package list with repositories | No                         | No                  | N/A                    |
+| upgrade  | Updates all installed packages       | Yes (updates versions)     | No                  | Yes                    |
+| install  | Installs a specific new package      | Yes (adds new software)    | Yes                 | No (but recommended)   |
 
 ## alias
 An alias in Linux is a shortcut for a command or a group of commands, allowing users to create custom, simplified command names for frequently used commands.
@@ -368,89 +403,39 @@ If set, you will see a t at the end of the permissions:
 
       drwxrwxrwt  10 root root  4096 Mar 2 10:00 /shared_folder/
 
+## Networking
 
+Networking refers to the tools and techniques used to manage network interfaces, test connectivity, and monitor network activity on a Linux system.
 
-## Init
-The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
+* **`ifconfig`**: Displays and configures network interfaces (older tool, often replaced by ip).
+* **`ip`**: Modern tool for managing network interfaces, routes, and more.
+* **`netstat`**: Shows network statistics, connections, and routing tables (partly replaced by ss).
+* **`ping`**: Tests connectivity to another host.
+* **`traceroute`**: Traces the path packets take to a destination.
 
-* **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
-* **Upstart** : Improved handling of dependencies between services and could substantially improve system startup time. It is not concerned with runlevels, but with system events. Job definition files are located in the /etc/init directory.
-* **Systemd** : Used by the latest versions of Fedora and RHEL. It manages services, sockets, devices, mount points, swap areas, and other unit types. It is concerned with runlevels, but they are called target units
-```
-systemctl --version
-```
-The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
+### Examples
 
+1. View Network Interfaces with ifconfig:
+```
+ifconfig
+```
+2. List Interfaces with ip:
+```
+ip addr
+```
+3. Check Active Connections with netstat:
+```
+netstat -tulnp
+```
+4. Test Connectivity with ping:
+```
+ping -c 4 google.com
+```
+5. Trace a Route with traceroute: Shows the hops between your system and google.com.
+```
+traceroute google.com
+```
 
-* **Service**: Manages daemons on a Linux server. Service unit names end with .service.
-* **Target**: Groups other units together. Target unit names end with .target. Systemd uses target units instead of runlevels.
-* **Automount** : Automatically mounts filesystems.
-* **Device**: Represents a device.
-* **Mount**: Defines mount points.
-* **Path**
-* **Snapshot**
-* **Socket**
-* **scope**
-* **slice**
-* **swap**
-* **timer**
-```
-systemctl list-units
-```
-### kernel madules
-A Linux Kernel Module (LKM) is a piece of code that can be dynamically loaded and unloaded into the Linux kernel without requiring a system reboot. These modules extend the functionality of the kernel, allowing it to support new hardware, filesystems, and features without modifying the core system.
-* **Modularity**: New functionalities can be added to the kernel as needed.
-* **Resource Optimization**: Modules are only loaded when required, reducing system overhead.
-* **Flexibility**: No need to recompile or restart the system to add/remove features.
-* **Ease of Maintenance**: Modules can be updated or replaced without affecting the running kernel.
-
-Listing Loaded Modules
-```
-lsmod
-```
-Loading a Module
-```
-sudo modprobe module_name
-```
-unload a module from the kernel
-```
-sudo rmmod module_name
-```
-### Runlevel
-A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
-Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
-
-| Runlevel | Description                     | Purpose                          |
-|----------|---------------------------------|----------------------------------|
-| 0        | Halt                            | Shuts down the system           |
-| 1        | Single-user mode                | Maintenance mode                 |
-| 2        | Multi-user mode (no network)    | Basic multi-user mode            |
-| 3        | Multi-user mode with networking | Full CLI-based multi-user mode   |
-| 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
-| 6        | Reboot                          | Restarts the system              |
-
-* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
-
-* Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
-
-To find out the current runlevel of your Linux system, use:
-```
-runlevel
-```
-#### Runlevels in systemd (Modern Linux Distributions)
-
-| Traditional Runlevel | systemd Target      |
-|----------------------|---------------------|
-| 0                    | poweroff.target     |
-| 1                    | rescue.target       |
-| 2, 3                 | multi-user.target   |
-| 5                    | graphical.target    |
-| 6                    | reboot.target       |
-
-Checking Current Runlevel (Target) in systemd:
-```
-systemctl get-default
-```
 ## Partitioning
 Partitioning is the process of dividing a hard drive into separate sections, called partitions. Think of it like splitting a big room into smaller rooms, where each room can have its own purpose. In Linux, partitioning is an important step when setting up a system because it helps you organize your data and manage how your hard drive is used.
 In Linux, there are a few types of partitions you need to know about:
@@ -1342,6 +1327,87 @@ journalctl -u sshd
 5. Use grep to search logs:
 ```
 grep "error" /var/log/syslog
+```
+## Init
+The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
+
+* **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
+* **Upstart** : Improved handling of dependencies between services and could substantially improve system startup time. It is not concerned with runlevels, but with system events. Job definition files are located in the /etc/init directory.
+* **Systemd** : Used by the latest versions of Fedora and RHEL. It manages services, sockets, devices, mount points, swap areas, and other unit types. It is concerned with runlevels, but they are called target units
+```
+systemctl --version
+```
+The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
+
+
+* **Service**: Manages daemons on a Linux server. Service unit names end with .service.
+* **Target**: Groups other units together. Target unit names end with .target. Systemd uses target units instead of runlevels.
+* **Automount** : Automatically mounts filesystems.
+* **Device**: Represents a device.
+* **Mount**: Defines mount points.
+* **Path**
+* **Snapshot**
+* **Socket**
+* **scope**
+* **slice**
+* **swap**
+* **timer**
+```
+systemctl list-units
+```
+### kernel madules
+A Linux Kernel Module (LKM) is a piece of code that can be dynamically loaded and unloaded into the Linux kernel without requiring a system reboot. These modules extend the functionality of the kernel, allowing it to support new hardware, filesystems, and features without modifying the core system.
+* **Modularity**: New functionalities can be added to the kernel as needed.
+* **Resource Optimization**: Modules are only loaded when required, reducing system overhead.
+* **Flexibility**: No need to recompile or restart the system to add/remove features.
+* **Ease of Maintenance**: Modules can be updated or replaced without affecting the running kernel.
+
+Listing Loaded Modules
+```
+lsmod
+```
+Loading a Module
+```
+sudo modprobe module_name
+```
+unload a module from the kernel
+```
+sudo rmmod module_name
+```
+### Runlevel
+A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
+Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
+
+| Runlevel | Description                     | Purpose                          |
+|----------|---------------------------------|----------------------------------|
+| 0        | Halt                            | Shuts down the system           |
+| 1        | Single-user mode                | Maintenance mode                 |
+| 2        | Multi-user mode (no network)    | Basic multi-user mode            |
+| 3        | Multi-user mode with networking | Full CLI-based multi-user mode   |
+| 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
+| 6        | Reboot                          | Restarts the system              |
+
+* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
+
+* Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
+
+To find out the current runlevel of your Linux system, use:
+```
+runlevel
+```
+#### Runlevels in systemd (Modern Linux Distributions)
+
+| Traditional Runlevel | systemd Target      |
+|----------------------|---------------------|
+| 0                    | poweroff.target     |
+| 1                    | rescue.target       |
+| 2, 3                 | multi-user.target   |
+| 5                    | graphical.target    |
+| 6                    | reboot.target       |
+
+Checking Current Runlevel (Target) in systemd:
+```
+systemctl get-default
 ```
 
 
