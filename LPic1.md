@@ -1491,7 +1491,91 @@ ls -l report_link
 | **Permissions**   | Same as the original file       | Independent, but target controls access |
 | **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
+## Cron Jobs in Linux
+A cron job is a scheduled task in Linux that runs automatically at specified times or intervals. Managed by the cron daemon (a background service), cron jobs are widely used to automate repetitive tasks such as backups, system maintenance, or sending reports. This document provides everything you need to understand and implement cron jobs.
+A cron job is a command or script scheduled to execute at specific times without manual intervention. It’s a time-based job scheduler that helps automate tasks, making it an essential tool for system administration.
 
+* Backing up files or databases
+* Clearing temporary files or logs
+* Sending automated emails or notifications
+* Running system updates or health checks
+
+### 1. How Cron Works
+The cron daemon (crond) runs continuously in the background, checking crontab (cron table) files for scheduled tasks. Each user can have their own crontab, and there’s a system-wide crontab for root-level tasks.
+
+### 2. Cron Schedule Format
+A cron job is defined by a line in the crontab file with six parts:
+
+Five time fields: Minute, Hour, Day of the Month, Month, Day of the Week
+Command: The task to execute
+
+```
+* * * * * command_to_run
+| | | | |
+| | | | +-- Day of the week (0-6) (Sunday=0 or 7)
+| | | +---- Month (1-12)
+| | +------ Day of the month (1-31)
+| +-------- Hour (0-23)
++---------- Minute (0-59)
+```
+* **(`*`)**: Every (e.g., every minute, every hour)
+* **`Numbers`**: Specific values (e.g., 5 for 5th minute)
+* **`Ranges`**: Use - (e.g., 1-5 for Monday to Friday)
+* **`Lists`**: Use , (e.g., 0,15,30,45 for every 15 minutes)
+* **`Steps`**: Use / (e.g., */10 for every 10 minutes)
+
+### 3. Setting Up Cron Jobs
+Use the crontab command to create or manage cron jobs.
+
+#### Edit Crontab:Opens the crontab file in your default editor.
+```
+crontab -e
+```
+#### List Cron Jobs: Shows your current cron jobs.
+```
+crontab -l
+```
+#### Remove All Cron Jobs: Deletes your entire crontab.
+```
+crontab -r
+```
+#### Edit Another User’s Crontab (as root):
+```
+sudo crontab -e -u username
+```
+### 4. Writing Cron Job Entries
+Here are practical examples of cron job schedules:
+
+#### Run a Script Daily at 2:30 AM:
+```
+30 2 * * * /path/to/script.sh
+```
+* Minute: 30
+* Hour: 2
+* Day/Month/Week: * (every)
+
+#### Run a Command Every 15 Minutes:
+```
+*/15 * * * * /path/to/command
+```
+* Minute: */15 (every 15 minutes)
+* Others: * (every)
+
+#### Backup Database Every Sunday at Midnight:
+```
+0 0 * * 0 /usr/bin/mysqldump -u user -p password dbname > /backup/db.sql
+```
+* Minute: 0
+* Hour: 0
+* Day of Week: 0 (Sunday)
+
+#### Run a Job on the 1st and 15th of Every Month at 8:00 AM:
+```
+0 8 1,15 * * /path/to/report.sh
+```
+* Minute: 0
+* Hour: 8
+* Day of Month: 1,15
 
 
 
