@@ -1040,6 +1040,150 @@ Explanation: This system has 2.0 gigabytes of swap space, which acts as an overf
 **Explanation**: All 2.0 gigabytes of swap are free, meaning the system has not needed to use swap yet.
 
 
+## Process
+In Linux, a process is an instance of a running program. It includes the program’s code, its data (like variables), and the system resources it uses, such as memory, CPU time, and open files. Every process is assigned a unique identifier called a Process ID (PID), which the operating system uses to track and manage it. Processes are fundamental to how Linux operates, and knowing how to view, monitor, manage, and terminate them is essential for system administration or everyday use
+
+A process can be in one of several states, which describe what it’s doing at any given time. You’ll see these states when viewing processes (e.g., in the S column of ps output):
+
+* **`R (Running)`**: The process is currently executing on the CPU.
+* **`S (Sleeping)`**: The process is waiting for an event, like user input or a timer.
+* **`D (Uninterruptible Sleep)`**: The process is waiting for I/O (e.g., disk or network) and cannot be interrupted.
+* **`Z (Zombie)`**: The process has finished, but its parent hasn’t cleaned up its exit status.
+* **`T (Stopped)`**: The process has been paused, usually by a signal like Ctrl+Z.
+
+### viewing processes
+
+1. ps - Process Snapshot
+
+The ps command gives you a static list of processes at a given moment.
+
+Basic Usage:
+```
+ps
+```
+
+Output:
+
+| PID  | TTY   | TIME     | CMD  |
+|------|-------|---------|------|
+| 1234 | pts/0 | 00:00:00 | bash |
+| 5678 | pts/0 | 00:00:00 | ps   |
+
+Explanation:
+
+**`PID`**: Process ID.
+
+**`TTY`**: Terminal associated with the process.
+
+**`TIME`**: Total CPU time used.
+
+**`CMD`**: The command or program running.
+
+- **Example**: Displays processes owned by a specific user.
+```
+ps -u username
+```
+- **Example**: Shows every process on the system.
+```
+ps -e
+```
+2. Top
+
+top shows a dynamic, real-time view of processes, sorted by resource usage (CPU by default).
+
+```
+top
+```
+* **`PID`**: Process ID.
+* **`USER`**: Owner of the process.
+* **`%CPU`**: CPU usage percentage.
+* **`%MEM`**: Memory usage percentage.
+* **`COMMAND`**: The program name.
+
+* Press q to exit.
+* Press k and enter a PID to kill a process.
+* Press u to filter by user.
+
+3. htop
+htop is a more user-friendly alternative to top, with colors, mouse support, and a better interface.
+
+```
+htop
+```
+* Use arrow keys to select a process.
+* Press F9 to send a signal (e.g., terminate).
+* Press F5 to see processes in a tree view.
+
+### Managing Processes
+
+1. Running in the Background
+Starts a process without tying up your terminal.
+
+```
+sleep 100 &
+```
+2. Bringing to the Foreground
+Moves a background process to the foreground
+
+```
+fg %1
+```
+### Killing a process
+To stop a process, you send it a signal. Common signals include SIGTERM (graceful stop) and SIGKILL (forceful stop).
+
+1. kill - Send Signal by PID
+```
+kill 1234
+```
+Sends SIGTERM to PID 1234, asking it to exit cleanly.
+
+2. Forceful Kill:
+```
+kill -9 1234
+```
+3. pkill - Kill by Name or Attribute
+Targets processes by name or other properties.
+```
+pkill -f firefox
+```
+4. killall - Kill All by Name
+
+```
+killall firefox
+```
+### nice
+The nice command is a utility in Linux that allows you to launch a process with a modified scheduling priority, known as its nice value. The nice value is a number that tells the system how "nice" a process should be to others—essentially, how much CPU time it should get relative to other processes. A lower nice value means higher priority (more CPU time), while a higher nice value means lower priority (less CPU time).
+
+* **`-20`**: Highest priority (the process gets the most CPU time).
+* **`0`**: Default priority (most processes start here unless changed).
+* **`19`**: Lowest priority (the process gets the least CPU time).
+
+Think of nice values like a politeness scale:
+
+* A process with -20 is "rude" and demands CPU time first.
+* A process with 19 is "very nice" and lets others go ahead.
+
+* **`Negative Values (-20 to -1)`**: These give higher priority, but only the root user (superuser) can set them.
+* **`Positive Values (0 to 19)`**: These lower the priority, and any user can set them.
+* **`Relative Nature`**: Nice values don’t set exact CPU percentages—they influence how the scheduler favors one process over another.
+
+For example, a process with a nice value of 10 will yield CPU time to one with 0, but both will still run, depending on system load.
+
+- **Example**: Launches ffmpeg (a video encoder) with a nice value of 10, reducing its CPU priority so other tasks aren’t slowed down.
+
+```
+nice -n 10 ffmpeg -i input.mp4 output.mp4
+```
+- **Example**: Run a Command with Higher Priority (Root Only): 
+```
+sudo nice -n -5 important_task.sh
+```
+
+
+
+
+
+
 
 
 
