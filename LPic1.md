@@ -25,6 +25,7 @@ UEFI stands for Unified Extensible Firmware Interface. It’s the newer, improve
 ## Bootloader
 A bootloader is a small but essential program that runs when you turn on your computer. Its main job is to find the operating system (like Windows, macOS, or Linux) on your hard drive and load it into the computer’s memory. Once the operating system is loaded, it takes control, allowing you to use your computer.
 Think of the bootloader as the starting whistle in a race. When you press the power button, your computer doesn’t know what to do on its own—it needs a guide. The bootloader acts as that guide, getting the operating system ready to run.
+* **`LILO`**
 * **`GRUB`**: Commonly used for Linux.
 * **`Windows Boot Manager`**: Used for Windows
 ## Boot Process
