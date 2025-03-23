@@ -8,6 +8,9 @@ Simply put, the operating system is the backbone that makes your computer work f
 ## Firmware
 Firmware is the software on your hardware that runs it; Think of it as a built-in OS or driver for your hardware. Motherboards need some firmware to be able to work too.
 Firmware is a type of software that lives in hardware. Software is any program or group of programs run by a computer.
+```
+sudo dmidecode -t bios
+```
 ## BIOS
 BIOS is like your computer’s morning wake-up routine. Imagine when you turn on your computer—it doesn’t just start working instantly, right? It needs a moment to get ready, kind of like how you might stretch or grab a coffee when you wake up.
 So, BIOS is a tiny little program that lives on a chip inside your computer. When you hit the power button, it’s the first thing that jumps into action. It’s like the computer’s personal assistant, checking to make sure everything’s okay—like the keyboard, mouse, and screen—and making sure they’re all connected and ready to work together.
