@@ -31,8 +31,11 @@ Think of the bootloader as the starting whistle in a race. When you press the po
 ### 1. Power On
 The power supply sends electricity to the motherboard, which "wakes up" the system and starts the boot process.
 ### 2. BIOS or UEFI Initialization
+
 BIOS: Runs a Power-On Self-Test (POST) to check essential hardware like the CPU, RAM, and storage devices.
+
 UEFI: Does a similar hardware check but faster, with added features like Secure Boot to ensure only trusted software runs.
+
 * **`Purpose`**: Confirms that all critical hardware is functioning before moving forward.
 ### 3. Bootloader Activation
 For BIOS, it looks in the Master Boot Record (MBR) on the storage device.
