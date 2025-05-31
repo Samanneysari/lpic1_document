@@ -28,6 +28,22 @@ Think of the bootloader as the starting whistle in a race. When you press the po
 * **`LILO`**
 * **`GRUB`**: Commonly used for Linux.
 * **`Windows Boot Manager`**: Used for Windows
+```
+grub-install --version
+```
+### Why is UEFI Faster Than BIOS?
+ there are specific technical reasons for the speed improvement:
+
+**`Parallel Hardware Initialization`**: UEFI can initialize multiple hardware devices at the same time (in parallel). In contrast, 
+BIOS checks devices one by one (serially), which is a much slower process.
+
+**`No 16-bit Limitation`**: BIOS runs in an old 16-bit processor mode, which is slow and limits how much memory it can access at once. 
+UEFI runs in 32-bit or 64-bit mode, allowing it to use the full power of modern CPUs and access much more memory, speeding up all its tasks.
+
+**`Optimized Bootloader Access`**: In a BIOS system, the firmware has to read the first 512-byte sector of the disk (the MBR) to find the bootloader.
+ UEFI has a more direct and efficient method: it accesses a dedicated EFI System Partition (ESP) where it can easily find and execute the bootloader's .efi 
+ file without the old limitations.
+
 ## Boot Process
 ### 1. Power On
 The power supply sends electricity to the motherboard, which "wakes up" the system and starts the boot process.
@@ -395,6 +411,12 @@ sudo apt install htop
 | upgrade  | Updates all installed packages       | Yes (updates versions)     | No                  | Yes                    |
 | install  | Installs a specific new package      | Yes (adds new software)    | Yes                 | No (but recommended)   |
 
+* apt update only updates the list or metadata of packages (and it's usually small in size).
+
+* apt upgrade uses this updated information to download and install the new versions of packages that need to be updated (which can be quite large).
+```
+cd /var/lib/apt/lists/
+```
 ## alias
 An alias in Linux is a shortcut for a command or a group of commands, allowing users to create custom, simplified command names for frequently used commands.
 ```
