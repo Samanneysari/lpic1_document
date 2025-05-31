@@ -32,6 +32,8 @@ BIOS checks devices one by one (serially), which is a much slower process.
 **`No 16-bit Limitation`**: BIOS runs in an old 16-bit processor mode, which is slow and limits how much memory it can access at once. 
 UEFI runs in 32-bit or 64-bit mode, allowing it to use the full power of modern CPUs and access much more memory, speeding up all its tasks.
 
+**`Optimized Bootloader Access`**: In a BIOS system, the firmware has to read the first 512-byte sector of the disk (the MBR) to find the bootloader.
+
 ## Bootloader
 A bootloader is a small but essential program that runs when you turn on your computer. Its main job is to find the operating system (like Windows, macOS, or Linux) on your hard drive and load it into the computer’s memory. Once the operating system is loaded, it takes control, allowing you to use your computer.
 Think of the bootloader as the starting whistle in a race. When you press the power button, your computer doesn’t know what to do on its own—it needs a guide. The bootloader acts as that guide, getting the operating system ready to run.
@@ -42,8 +44,6 @@ Think of the bootloader as the starting whistle in a race. When you press the po
 grub-install --version
 ```
 
-
-**`Optimized Bootloader Access`**: In a BIOS system, the firmware has to read the first 512-byte sector of the disk (the MBR) to find the bootloader.
  UEFI has a more direct and efficient method: it accesses a dedicated EFI System Partition (ESP) where it can easily find and execute the bootloader's .efi 
  file without the old limitations.
 
