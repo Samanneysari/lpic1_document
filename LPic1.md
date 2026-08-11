@@ -1,54 +1,75 @@
-# Linux Lpic 1
+# Linux LPIC-1
+
+> [!NOTE]
+> This is the author's original long-form notebook. Correct explanations are preserved.
+> Objective-aligned chapters, labs, exercises, and answers are linked from [README.md](README.md).
+> Before running administrative storage or security commands, read [SAFETY.md](SAFETY.md).
+
 ## Operating System
+
 An operating system (OS) is the vital software that powers up your computer and keeps it running smoothly. Picture it as the conductor of an orchestra, directing all the parts of your machine—like the processor, memory, and storage—so they work together without missing a beat. Without this software, your computer would just be a collection of lifeless hardware, unable to run apps or follow your instructions.
 
 At its heart, the OS is the behind-the-scenes organizer. It juggles tasks like deciding which program gets attention from the CPU, keeping your files in order, and making sure everything hums along without tripping over itself. Plus, it’s what lets you actually use your computer, whether that’s through a friendly screen with icons and windows or a text-based setup where you type commands.
 
 Simply put, the operating system is the backbone that makes your computer work for you. It ties your hardware to your apps, manages all the moving pieces, and keeps things flowing so you can do what you need to do.
+
 ## Firmware
+
 Firmware is the software on your hardware that runs it; Think of it as a built-in OS or driver for your hardware. Motherboards need some firmware to be able to work too.
 Firmware is a type of software that lives in hardware. Software is any program or group of programs run by a computer.
-```
+
+```text
 sudo dmidecode -t bios
 ```
+
 ## BIOS
+
 BIOS is like your computer’s morning wake-up routine. Imagine when you turn on your computer—it doesn’t just start working instantly, right? It needs a moment to get ready, kind of like how you might stretch or grab a coffee when you wake up.
 So, BIOS is a tiny little program that lives on a chip inside your computer. When you hit the power button, it’s the first thing that jumps into action. It’s like the computer’s personal assistant, checking to make sure everything’s okay—like the keyboard, mouse, and screen—and making sure they’re all connected and ready to work together.
 Once it’s done with that quick check, BIOS says, “Alright, everything looks good!” and passes the job over to the operating system (you know, like Windows or macOS). That’s the main software that lets you do all the fun stuff—browsing the internet, playing games, or typing up a document.
+
 ## UEFI
-UEFI stands for Unified Extensible Firmware Interface. It’s the newer, improved version of BIOS. Like BIOS, UEFI runs when you turn on your computer and checks the hardware. But it does this faster, so your computer starts up more quickly. UEFI can work with larger hard drives (perfect for storing lots of files) and has extras like Secure Boot. Secure Boot checks that only trusted software runs at startup, helping protect your computer from viruses or malware. UEFI is also easier to update and often has a nicer interface (sometimes even with mouse support!).
-### Key Differences Between BIOS and UEFI
-* **`Speed`**: UEFI boots your computer faster than BIOS.
-* **`Storage`**: UEFI supports bigger hard drives; BIOS has limits and struggles with modern sizes.
-* **`Security`**: UEFI has Secure Boot to block bad software; BIOS doesn’t.
-* **`Look and Feel`**: UEFI can have a graphical interface; BIOS is usually plain text and harder to navigate.
 
-### Why is UEFI Faster Than BIOS?
- there are specific technical reasons for the speed improvement:
+UEFI stands for Unified Extensible Firmware Interface. It is a modern firmware interface used by most current computers. Like legacy BIOS firmware, it initializes hardware and starts the boot process. UEFI can load an EFI executable from an EFI System Partition (ESP), supports GPT disks, and provides firmware services to the bootloader and operating system.
 
-**`Parallel Hardware Initialization`**: UEFI can initialize multiple hardware devices at the same time (in parallel). In contrast, 
-BIOS checks devices one by one (serially), which is a much slower process.
+UEFI implementations can boot faster than legacy BIOS because they may initialize devices in parallel, skip unnecessary checks, and load the boot manager directly from the ESP. Boot time still depends on the firmware implementation, hardware, enabled tests, and operating-system configuration; UEFI is not automatically faster on every machine.
 
-**`No 16-bit Limitation`**: BIOS runs in an old 16-bit processor mode, which is slow and limits how much memory it can access at once. 
-UEFI runs in 32-bit or 64-bit mode, allowing it to use the full power of modern CPUs and access much more memory, speeding up all its tasks.
+Secure Boot is an optional UEFI feature. It verifies digital signatures in the boot chain and blocks untrusted boot components when correctly configured. It reduces the risk of some bootkits, but it does not scan ordinary files, remove malware, replace patching, or guarantee that the whole system is secure.
 
-**`Optimized Bootloader Access`**: In a BIOS system, the firmware has to read the first 512-byte sector of the disk (the MBR) to find the bootloader.
+### Key Differences Between Legacy BIOS and UEFI
 
- **`UEFI has a more direct and efficient method`**: it accesses a dedicated EFI System Partition (ESP) where it can easily find and execute the bootloader's .efi file without the old limitations.
+* **Boot method**: legacy BIOS normally starts code from the disk's boot sector; UEFI loads an EFI program from the ESP.
+* **Partitioning**: legacy BIOS is commonly paired with MBR; UEFI is commonly paired with GPT. GPT can also be used on some BIOS systems with a suitable bootloader.
+* **Disk layout**: GPT supports far more partitions and very large disks; its exact size limit depends on the logical sector size.
+* **Security**: UEFI can provide Secure Boot. This feature is optional and depends on trusted keys and signed components.
+* **Interface**: UEFI may provide graphics, networking, mouse input, and update services, although vendors decide which features to implement.
+
+### Why UEFI Can Be Faster
+
+* **Parallel initialization**: firmware may initialize independent devices at the same time.
+* **Modern execution environment**: UEFI is designed for modern processor modes and structured firmware drivers.
+* **Direct boot-manager loading**: UEFI reads a registered `.efi` boot program from the ESP instead of relying only on the legacy 512-byte MBR boot path.
+* **Configurable checks**: features such as fast boot may omit or defer some hardware tests. This is a tradeoff, not an unconditional advantage.
 
 ## Bootloader
+
 A bootloader is a small but essential program that runs when you turn on your computer. Its main job is to find the operating system (like Windows, macOS, or Linux) on your hard drive and load it into the computer’s memory. Once the operating system is loaded, it takes control, allowing you to use your computer.
 Think of the bootloader as the starting whistle in a race. When you press the power button, your computer doesn’t know what to do on its own—it needs a guide. The bootloader acts as that guide, getting the operating system ready to run.
+
 * **`LILO`**
 * **`GRUB`**: Commonly used for Linux.
 * **`Windows Boot Manager`**: Used for Windows
-```
+
+```text
 grub-install --version
 ```
 
 ## Boot Process
+
 ### 1. Power On
+
 The power supply sends electricity to the motherboard, which "wakes up" the system and starts the boot process.
+
 ### 2. BIOS or UEFI Initialization
 
 BIOS: Runs a Power-On Self-Test (POST) to check essential hardware like the CPU, RAM, and storage devices.
@@ -56,43 +77,70 @@ BIOS: Runs a Power-On Self-Test (POST) to check essential hardware like the CPU,
 UEFI: Does a similar hardware check but faster, with added features like Secure Boot to ensure only trusted software runs.
 
 * **`Purpose`**: Confirms that all critical hardware is functioning before moving forward.
+
 ### 3. Bootloader Activation
+
 For BIOS, it looks in the Master Boot Record (MBR) on the storage device.
 For UEFI, it checks the EFI System Partition (ESP).
+
 * **`Purpose`**:Prepares the system to load the operating system by finding the bootloader.
+
 ### 4. Bootloader Execution
+
 Examples include GRUB (common for Linux) or Windows Boot Manager (for Windows).
 If there’s only one OS, it skips the menu and moves forward automatically.
+
 * **`Purpose`**: Allows you to choose an operating system (if applicable) and starts loading it.
+
 ### 5. Operating System Loading
+
 The kernel is the core of the operating system, responsible for managing hardware and software interactions.
 The bootloader hands control over to the kernel to begin the OS startup.
+
 * **`Purpose`**: Begins the process of getting the operating system up and running.
+
 ### 6. Kernel Initialization
+
 It sets up hardware drivers (e.g., for your graphics card, network adapter, etc.).
 It mounts the root file system, which contains all the necessary files for the OS to operate.
+
 * **`Purpose`**: Prepares the system to handle applications and services.
+
 ### 7. System Services and User Interface
+
 Services like networking, printing, and security systems are launched.
 Depending on the OS, either a graphical user interface (GUI) or a command-line interface (CLI) appears.
+
 * **`Purpose`**: Makes the computer fully functional and ready for interaction.
+
 ### 8. Login Screen or Desktop
+
 The operating system is now completely loaded and operational.
 You can log in and start using the computer.
+
 * **`Purpose`**: The system is ready for you to work, browse, or do whatever you need!
+
 ## Root
+
 refers to the highest level of access or control within the system. It’s a fundamental concept that appears in several key areas, each with its own specific meaning
-#### 1. Root as a Superuser
+
+### 1. Root as a Superuser
+
 #### 2. Root as a filesystem root
+
 #### 3. root as root's home directiory
+
 #### 4. root as a group
+
 ## Directories
+
 The Filesystem Hierarchy Standard (FHS) is a set of guidelines that defines the structure and organization of files and directories in Unix-like operating systems, such as Linux. Its primary goal is to ensure consistency across different distributions, making it easier for users, administrators, and software to locate and manage files in a predictable way.
 Below is a comprehensive list of the main directories in Linux, along with their definitions:
+
 * **/**: The root directory, serving as the top-level directory of the file system hierarchy. All other directories and files reside under this directory.
 * **/bin**: Contains essential user command binaries (executable files) such as ls, cp, and mv, which are necessary for basic system operation and accessible to all users.
-*  **/boot**: Holds static files required for booting the system, including the Linux kernel and bootloader configuration files (e.g., GRUB).
-*  **/dev**: Stores device files that represent hardware devices (e.g., disks, printers, or terminals). In Linux, these files allow programs to interact with hardware as if they were regular files.
+* **/boot**: Holds static files required for booting the system, including the Linux kernel and bootloader configuration files (e.g., GRUB).
+* **/dev**: Stores device files that represent hardware devices (e.g., disks, printers, or terminals). In Linux, these files allow programs to interact with hardware as if they were regular files.
 * **/etc**: Contains host-specific system configuration files, such as settings for applications, services, and the operating system itself (e.g., /etc/passwd for user account information).
 * **/home**: Houses individual home directories for each user (e.g., /home/username), where users store personal files and user-specific configuration settings.
 * **/lib**: Provides essential shared libraries and kernel modules that programs rely on to function, offering reusable code and routines.
@@ -105,20 +153,23 @@ Below is a comprehensive list of the main directories in Linux, along with their
 * **/srv**: Holds data for services provided by the system, such as files served by web or FTP servers, though its usage varies by distribution.
 * **/tmp**: A directory for temporary files created by applications or users, often cleared automatically upon system reboot.
 * **/usr**: A secondary hierarchy containing user-related programs and data, with subdirectories like /usr/bin (user binaries), /usr/lib (libraries), and /usr/share (shared data).
-*  **/var**: Stores variable data files that change during system operation, such as log files (/var/log), mail spools, and other persistent temporary files.
-  
+* **/var**: Stores variable data files that change during system operation, such as log files (/var/log), mail spools, and other persistent temporary files.
+
 These directories form the backbone of the Linux file system, ensuring a standardized structure across different distributions. While additional directories like /sys (for kernel and device information) or /run (for runtime data) may appear in modern systems, the ones listed above are the core directories defined by the FHS. Note that the exact contents or usage of some directories may vary slightly depending on the specific Linux distribution.
+
 ## Init
+
 The init (or systemd) is the initialization daemon and can be considered the "mother of all processes". It is the first process started by the kernel. For systems using SysVinit or Upstart, the init daemon is named init, while for systemd systems, it's named systemd. When the Linux kernel starts, the initialization process (init or systemd) has a parent process ID (PPID) of 0 and a PID of 1. Once started, init is responsible for launching processes configured to start at boot time, such as the login shell (getty or mingetty process), and for managing services
 
 * **SysVinit** : A traditional init system created for UNIX System V in the early 1980s. It starts and stops services based on runlevels. Control files are located at /etc/init.d/.
 * **Upstart** : Improved handling of dependencies between services and could substantially improve system startup time. It is not concerned with runlevels, but with system events. Job definition files are located in the /etc/init directory.
 * **Systemd** : Used by the latest versions of Fedora and RHEL. It manages services, sockets, devices, mount points, swap areas, and other unit types. It is concerned with runlevels, but they are called target units
-```
+
+```text
 systemctl --version
 ```
-The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
 
+The systemd init system uses units to manage various aspects of the system. A unit is a group consisting of a name, a type, and a configuration file focused on a particular service or action. Systemd has 12 unit types. Here are some of them, drawing on the sources and our conversation history
 
 * **Service**: Manages daemons on a Linux server. Service unit names end with .service.
 * **Target**: Groups other units together. Target unit names end with .target. Systemd uses target units instead of runlevels.
@@ -132,29 +183,40 @@ The systemd init system uses units to manage various aspects of the system. A un
 * **slice**
 * **swap**
 * **timer**
-```
+
+```text
 systemctl list-units
 ```
+
 ### Kernel Madules
+
 A Linux Kernel Module (LKM) is a piece of code that can be dynamically loaded and unloaded into the Linux kernel without requiring a system reboot. These modules extend the functionality of the kernel, allowing it to support new hardware, filesystems, and features without modifying the core system.
+
 * **Modularity**: New functionalities can be added to the kernel as needed.
 * **Resource Optimization**: Modules are only loaded when required, reducing system overhead.
 * **Flexibility**: No need to recompile or restart the system to add/remove features.
 * **Ease of Maintenance**: Modules can be updated or replaced without affecting the running kernel.
 
 Listing Loaded Modules
-```
+
+```text
 lsmod
 ```
+
 Loading a Module
-```
+
+```text
 sudo modprobe module_name
 ```
+
 unload a module from the kernel
-```
+
+```text
 sudo rmmod module_name
 ```
+
 ### Runlevel
+
 A runlevel in Linux defines the operational state of the system. It determines which services and processes are running. Runlevels are pre-defined modes in which the system can operate, such as single-user mode, multi-user mode, or graphical mode.
 Each runlevel has a specific purpose, and switching between runlevels allows administrators to control the behavior of the system.
 
@@ -162,19 +224,21 @@ Each runlevel has a specific purpose, and switching between runlevels allows adm
 |----------|---------------------------------|----------------------------------|
 | 0        | Halt                            | Shuts down the system           |
 | 1        | Single-user mode                | Maintenance mode                 |
-| 2        | Multi-user mode (no network)    | Basic multi-user mode            |
+| 2        | Distribution-specific multi-user mode | Meaning varies by distribution |
 | 3        | Multi-user mode with networking | Full CLI-based multi-user mode   |
 | 5        | Graphical mode (GUI)            | Multi-user mode with GUI support |
 | 6        | Reboot                          | Restarts the system              |
 
-* Some Linux distributions (e.g., Red Hat-based systems) follow this traditional runlevel system.
+* Historical runlevel meanings are distribution-specific. Red Hat-style systems traditionally use runlevel 3 for text multi-user mode and 5 for graphical mode, while Debian-family systems traditionally treat runlevels 2 through 5 similarly.
 
 * Modern systemd-based distributions (such as Ubuntu and newer Fedora versions) use targets instead of runlevels.
 
 To find out the current runlevel of your Linux system, use:
-```
+
+```text
 runlevel
 ```
+
 #### Runlevels in systemd (Modern Linux Distributions)
 
 | Traditional Runlevel | systemd Target      |
@@ -186,94 +250,147 @@ runlevel
 | 6                    | reboot.target       |
 
 Checking Current Runlevel (Target) in systemd:
-```
+
+```text
 systemctl get-default
 ```
+
 ## User and Group Management
+
 * **New User**
-```
+
+```text
 sudo useradd saman
 ```
+
 * **New Group**
-```
+
+```text
 sudo groupadd realmadrid
 ```
+
 * **delete user**
-```
+
+```text
 sudo userdel saman
 ```
+
 * **to determine the current username of the user logged in**
-```
+
+```text
 whoami
 ```
+
 * **sets and changes passwords for users**
-```
+
+```text
 sudo passwd saman
 ```
-* **Assign multiple sub group to a user** 
+
+* **Assign multiple sub group to a user**
+
+```text
+sudo usermod -aG group1,group2,group3 saman
 ```
-sudo usermod -aG group1.group2.group3 saman
-```
+
 * **Lock Password**
+
+```text
+sudo usermod -L saman
 ```
-usermod -L saman
-```
+
 * **Unlock Password**
+
+```text
+sudo usermod -U saman
 ```
-usermod -u saman
-```
+
 * **Lock User**
+
+```text
+sudo passwd -l saman
 ```
-passwd -l saman
-```
+
 * **Unlock User**
-```
-passwd -u saman
+
+```text
+sudo passwd -u saman
 ```
 
-### When you use useradd saman: 
+### What Happens When You Run `useradd saman`?
 
-* **1. Check if there is any user like saman in /etc/passwd**
-* **2. Assign first free UID to the user**
-* **3. Create a group with the same username and Assign first free GID**
-* **4. join user saman to the group saman**
-* **5. make a directory with the same username under /home**
-* **6. user will be the owner of the home directory and set permission**
-* **7. copy all the files from route /etc/skel/ to the home directory of the user and set permission**
-* **8. in the route /var/spool/mail/... a file will make with the same username**
-* **9. in the route /etc/passwd a record will add with the same username**
-### When you use groupadd saman:
-* **1. Check if there is not any group like saman in the route /etc/passwd**
-* **2. Assign first free GID to the group**
-* **3. add a new record in the route /etc/passwd with the same group name**
+The exact result depends on distribution policy and the settings in `/etc/login.defs` and `/etc/default/useradd`. Do not assume that every distribution creates a home directory, a same-name private group, or a mail spool unless its defaults request those actions.
+
+A typical `useradd` operation:
+
+1. Checks whether the login name already exists.
+2. Selects a UID according to the configured `UID_MIN`, `UID_MAX`, and allocation policy.
+3. Creates or selects the primary group according to command options and distribution defaults.
+4. Adds the account record to `/etc/passwd` and the password-aging record to `/etc/shadow`.
+5. Creates the home directory only when `-m` is used or `CREATE_HOME` is enabled.
+6. Copies `/etc/skel` into the new home directory only when the home directory is created.
+7. Sets ownership and permissions according to the selected defaults.
+8. May create a mail spool when the distribution's account tools are configured to do so.
+
+Use explicit options when you need predictable behavior:
+
+```bash
+sudo useradd -m -s /bin/bash saman
+sudo passwd saman
+```
+
+* `-m` explicitly creates the home directory.
+* `-s /bin/bash` explicitly selects the login shell.
+* `passwd` sets the initial password without placing it on the command line.
+
+### What Happens When You Run `groupadd saman`?
+
+The command checks existing group names and GIDs, allocates a GID according to `/etc/login.defs`, and writes the group record to `/etc/group`. Secure group administration data may also be maintained in `/etc/gshadow`; group records are not stored in `/etc/passwd`.
+
 ### Man Useradd
 
 * **-d** : the new user will be created using HOME_DIR as the value for the user's login directory. The default is to append the LOGIN
+
            name to BASE_DIR and use that as the login directory name. If the directory HOME_DIR does not exist, then it will be created
            unless the -M option is specified.
+
 * **-m** : Create the user's home directory if it does not exist. The files and directories contained in the skeleton directory (which can
+
            be defined with the -k option) will be copied to the home directory. By default, if this option is not specified and CREATE_HOME is not enabled, no home directories are created.
+
 * **-s** : sets the path to the user's login shell. Without this option, the system will use the SHELL variable specified in
+
            /etc/default/useradd, or, if that is as well not set, the field for the login shell in /etc/passwd remains empty.
+
 * **-u** : The numerical value of the user's ID. This value must be unique, unless the -o option is used. The value must be non-negative.
+
            The default is to use the smallest ID value greater than or equal to UID_MIN and greater than every other user.
+
 * **-c** : Any text string. It is generally a short description of the account, and is currently used as the field for the user's full
+
            name.
 
 ## Shadowing
+
 In Linux, shadowing is a security feature that stores user passwords in a separate file (/etc/shadow) instead of the publicly readable /etc/passwd file. This prevents unauthorized users from accessing password hashes.
+
 * Before Shadowing: Password hashes were stored in /etc/passwd, which was world-readable.
 * After Shadowing: Passwords are moved to /etc/shadow, which only root can access.
 * /etc/shadow contains hashed passwords, expiration settings, and account policies.
 * Improves security by preventing regular users from reading password hashes.
 
 ## ls
+
 The ls command in Linux is used to list the contents of a directory. It displays files and directories with various details depending on the options used
+
 * **Syntax**
-```
+
+```text
 ls [OPTIONS] [DIRECTORY]
 ```
-#### Options
+
+### Options
+
 * **ls** → Lists files and directories in the current directory.
 
 * **ls -l** → Displays detailed information (permissions, owner, size, and timestamp).
@@ -289,63 +406,90 @@ ls [OPTIONS] [DIRECTORY]
 * **ls -S** → Sorts files by size (largest first).
 
 * **ls -1** → Lists one file per line.
+
 ## Common Commands
+
 * **pwd** : displays the full path of the current directory.
-```
+
+```text
 pwd
 ```
+
 * **touch** : is used to create empty files or update timestamps of existing files
-```
+
+```text
 touch f1
 ```
+
 * **cd** : is used to change directory
-```
+
+```text
 cd /var/
 ```
+
 * **file** : is used to specify the type of file
-```
+
+```text
 file saman.text
 ```
+
 * **mkdir** : is used to create directories in the current pwd
-```
+
+```text
 mkdir real
 ```
+
 * **cp** : is used to copy files or directories from one location to another.
-```
+
+```text
 cp [option] [source][destination]
 cp -r /mft/f1.text /home/saman
 ```
+
 * **mv** : moves or renames files and directories.
-```
-cp [option] [source][destination]
+
+```text
+mv [option] [source] [destination]
 mv file1 newfile  # Renames file1 to newfile
 mv file1 /home/user/  # Moves file1 to /home/user/
 ```
+
 * **rm** : deletes files or directories.
-```
+
+```text
 rm file1 → Deletes file1.
 
 rm -r dir1 → Deletes directory dir1 and its contents.
 
 rm -i file1 → Prompts before deletion.
 ```
+
 * **su -** : switch user to root , run home directory system script & variables
-```
+
+```text
 su - root
 ```
+
 * **su** : switch user to root, without run home directory system script
-```
+
+```text
 su root
 ```
-* **echo** : add message to a file 
-```
+
+* **echo**: prints text. With `>` it creates or replaces a file; with `>>` it appends.
+
+```bash
 echo "salam" > f1.text
+echo "another line" >> f1.text
 ```
+
 * **cat** : reading files
-```
+
+```text
 cat f1.text
 ```
-## stat 
+
+## stat
 
 stat is a command-line tool that reveals the status of a file or directory by displaying its key attributes. These attributes include:
 
@@ -359,9 +503,10 @@ stat is a command-line tool that reveals the status of a file or directory by di
 
 Unlike commands like `ls`, which provide a summary of file properties, `stat` offers a more comprehensive and structured view of a file's metadata.
 
-```
+```text
 stat example.txt
 ```
+
 * **`File`**: The name of the file or directory.
 * **`Size`**: The size of the file in bytes (e.g., 1024 bytes).
 * **`Blocks`**: The number of disk blocks allocated to the file.
@@ -379,12 +524,16 @@ stat example.txt
 * **`Birth`**: The creation time of the file (not always available on all filesystems).
 
 ## Package Management
+
 Package management involves tools and systems that install, update, and remove software packages (precompiled programs and their dependencies).
 
 ### Debian-Based (e.g., Ubuntu):
+
 * **`dpkg`**: Low-level tool for handling .deb packages.
 * **`apt`**: High-level tool for managing packages and repositories.
+
 ### Red Hat-Based (e.g., CentOS, Fedora):
+
 * **`rpm`**: Low-level tool for handling .rpm packages.
 * **`yum or dnf`**: High-level tools for managing packages and repositories (dnf is the newer version of yum).
 
@@ -392,18 +541,23 @@ Package management involves tools and systems that install, update, and remove s
 
 The update command refreshes your system’s list of available packages and their versions by syncing with the repositories you’ve configured. It updates the local package database but does not install or modify any software on your system.
 
-```
+```text
 sudo apt update
 ```
+
 #### Upgrade
+
 The upgrade command updates all currently installed packages to their latest versions based on the repository data (which requires a prior update). It downloads and installs newer versions of software already on your system but does not add new packages or remove existing ones.
 
-```
+```text
 sudo apt upgrade
 ```
+
 #### Install
+
 The install command adds a specific package (or packages) to your system that isn’t currently installed. It downloads the package and its dependencies and sets them up. If the package is already installed, install can sometimes be used to reinstall it or upgrade it to a specific version (with additional options).
-```
+
+```text
 sudo apt install htop
 ```
 
@@ -416,35 +570,50 @@ sudo apt install htop
 * apt update only updates the list or metadata of packages (and it's usually small in size).
 
 * apt upgrade uses this updated information to download and install the new versions of packages that need to be updated (which can be quite large).
-```
+
+```text
 cd /var/lib/apt/lists/
 ```
+
 ## alias
+
 An alias in Linux is a shortcut for a command or a group of commands, allowing users to create custom, simplified command names for frequently used commands.
-```
+
+```text
 alias name='command'
 ```
-```
+
+```text
 alias ll='ls -lah'
 ```
+
 * **Removing an Alias**
-```
+
+```text
 unalias ll
 ```
+
 * **Making Aliases Permanent**
-```
+
+```text
 echo "alias ll='ls -lah'" >> ~/.bashrc
 source ~/.bashrc
 ```
+
 ## Permission
+
 In Linux, file and directory permissions determine who can read, write, or execute a file. Understanding these permissions is essential for managing security and access control.
+
 ### 1. File Permission Types
+
 Each file and directory has three types of permissions:
+
 * **Read (r)**: Allows viewing the file contents or listing directory contents. 4
 * **Write (w)**: Allows modifying the file or adding/removing files in a directory. 2
 * **Execute (x)**: Allows running a file (if it's a script or program) or accessing a directory. 1
 
 Permissions are assigned to three categories:
+
 * **Owner (u)**: The user who owns the file.
 * **Group (g)**: A group of users with shared access.
 * **Others (o)**: All other users on the system.
@@ -452,13 +621,17 @@ Permissions are assigned to three categories:
 ### 2. Viewing File Permissions
 
 To check file permissions, use:
-```
+
+```text
 ls -l filename
 ```
+
 Example output:
-```
+
+```text
 -rw-r--r--  1 user group  1024  Mar 2 10:00  file.txt
 ```
+
 * **The first character (- or d)** indicates a file (-) or directory (d).
 
 * **The next three (rw-)** are owner permissions (read and write).
@@ -472,6 +645,7 @@ Example output:
 The **chmod** command is used to modify permissions.
 
 #### 3.1 Symbolic Mode
+
 Adds execute permission for the owner
 
       chmod u+x file.sh
@@ -488,20 +662,20 @@ Sets specific permissions
 
       chmod u=rwx,g=rx,o=r file.txt
 
-
 ### 4. Changing Ownership with chown and chgrp
 
 4.1 Changing File Owner (chown)
 
 Change owner
 
-      chown newuser file.txt 
+      chown newuser file.txt
 
 Change owner and group
 
-      chown newuser:newgroup file.txt 
+      chown newuser:newgroup file.txt
 
 ### 5. Sticky bit
+
 The sticky bit is a special permission that prevents users from deleting files they do not own in a shared directory. This is commonly used in directories like /tmp
 
 #### 5.1 To enable the sticky bit on a directory:
@@ -517,34 +691,44 @@ If set, you will see a t at the end of the permissions:
       drwxrwxrwt  10 root root  4096 Mar 2 10:00 /shared_folder/
 
 ### 6. umask
+
 The umask command in Linux sets the default permissions for new files and directories you create. It acts like a filter, determining which permissions are not granted by default, ensuring your files and folders start with the right level of access.
+
 * **`Files`**: start with maximum permissions of 666 (read and write for owner, group, and others).
 * **`Directories`** start with 777 (read, write, and execute for all).
-* **`The umask value`** (a three-digit number, e.g., 022) masks out specific permissions.
+* **`The umask value`** (a three-digit number, e.g., 022) clears permission bits from the requested mode. Subtraction is only a shortcut for simple examples; the actual operation is a bit mask.
 
 #### Example: umask 022
-##### New files: 666 - 022 = 644 (rw-r--r--)
+
+##### New files: requested mode 666 masked by 022 gives 644 (rw-r--r--)
+
 * **`Owner`**: read/write
 * **`Group/Others`**: read only
 
-##### New directories: 777 - 022 = 755 (rwxr-xr-x)
+##### New directories: requested mode 777 masked by 022 gives 755 (rwxr-xr-x)
+
 * **`Owner`**: full access
 * **`Group/Others`**: read and execute
+
 #### Checking and Setting umask
+
 ##### Check current umask: Output might be 0022 (leading zero is optional).
-```
+
+```text
 umask
 ```
 
 ##### Set a new umask: Files become 664 (rw-rw-r--), directories 775 (rwxrwxr-x), allowing group write access.
-```
+
+```text
 umask 002
 ```
-
 
 ## Networking
 
 Networking refers to the tools and techniques used to manage network interfaces, test connectivity, and monitor network activity on a Linux system.
+
+Use `ip` and `ss` for current administration. Know `ifconfig` and `netstat` for legacy systems and exam recognition; many modern distributions do not install them by default.
 
 * **`ifconfig`**: Displays and configures network interfaces (older tool, often replaced by ip).
 * **`ip`**: Modern tool for managing network interfaces, routes, and more.
@@ -555,43 +739,56 @@ Networking refers to the tools and techniques used to manage network interfaces,
 ### Examples
 
 1. View Network Interfaces with ifconfig:
-```
+
+```text
 ifconfig
 ```
+
 2. List Interfaces with ip:
-```
+
+```text
 ip addr
 ```
+
 3. Check Active Connections with netstat:
-```
+
+```text
 netstat -tulnp
 ```
+
 4. Test Connectivity with ping:
-```
+
+```text
 ping -c 4 google.com
 ```
+
 5. Trace a Route with traceroute: Shows the hops between your system and google.com.
-```
+
+```text
 traceroute google.com
 ```
 
 ## Partitioning
+
 Partitioning is the process of dividing a hard drive into separate sections, called partitions. Think of it like splitting a big room into smaller rooms, where each room can have its own purpose. In Linux, partitioning is an important step when setting up a system because it helps you organize your data and manage how your hard drive is used.
-In Linux, there are a few types of partitions you need to know about:
+With the legacy MBR scheme, there are three partition types to know. These categories and the four-primary-partition limit do not apply to GPT:
 
 * **Primary Partitions**: These are the main sections of your hard drive. You can have up to four primary partitions on a single drive.
 * **Extended Partitions**: If you need more than four partitions, you can create an extended partition. This acts like a container that holds extra partitions inside it.
 * **Logical Partitions**: These are the extra partitions you create inside an extended partition. They let you go beyond the four-partition limit.
 
-#### Partitioning Methods
+### Partitioning Methods
 
 When you partition a hard drive in Linux, you’re not just splitting it into sections—you’re also choosing a partitioning method (or scheme) that defines how the partitions are organized and stored on the disk. The two primary methods are MBR (Master Boot Record) and GPT (GUID Partition Table). Each has its own strengths, limitations, and use cases. Let’s dive into what they are and how they work
+
 1. MBR (Master Boot Record)
+
 MBR is the older, traditional partitioning method, dating back to the 1980s. It stores partition information in the first sector of the disk (the "master boot record").
 
 The MBR contains a small boot loader and a partition table that can define up to 4 primary partitions.
 If you need more than 4, you can create an extended partition, which acts as a container for additional logical partitions.
 Limits:
+
 * Maximum disk size: 2 terabytes (due to 32-bit addressing).
 * Maximum partitions: 4 primary, or more with logical partitions inside an extended one.
 * Tools: Managed with fdisk or sfdisk.
@@ -599,14 +796,15 @@ Limits:
 * A disk might have /dev/sda1 (primary), /dev/sda2 (primary), and /dev/sda5 (logical inside an extended partition).
 
 2. GPT (GUID Partition Table)
+
 GPT is the modern partitioning method, designed to overcome MBR’s limitations. It’s part of the UEFI (Unified Extensible Firmware Interface) standard.
 
 Uses globally unique identifiers (GUIDs) to define partitions.
 Stores partition data in multiple locations on the disk for redundancy.
 Supports up to 128 partitions by default (and more with adjustments).
 
-* Maximum disk size: 9.4 zettabytes (about 9.4 billion terabytes), far beyond current hardware limits.
-* Requires UEFI firmware (though some BIOS systems can boot GPT with extra setup).
+* Maximum disk size: extremely large; the theoretical limit depends on the logical sector size.
+* Commonly used with UEFI. GPT can also hold data on BIOS systems, and GRUB can boot from GPT on BIOS hardware when a BIOS boot partition is configured.
 * Tools: Managed with gdisk, parted, or sfdisk.
 * Use Case: Standard for modern systems, large drives, and UEFI-based computers.
 * A disk might have /dev/sda1 (EFI system partition), /dev/sda2 (root), and so on, up to 128 partitions.
@@ -616,87 +814,121 @@ Supports up to 128 partitions by default (and more with adjustments).
 | Method    | Max Disk Size | Max Partitions     | Boot Support | Tool Example | Use Case            |
 |-----------|---------------|--------------------|--------------|--------------|---------------------|
 | MBR       | 2 TB          | 4 primary (+logical)| BIOS         | `fdisk`      | Older systems, small disks |
-| GPT       | 9.4 ZB        | 128 (default)      | UEFI         | `gdisk`      | Modern systems, large disks |
+| GPT       | Very large (sector-size dependent) | 128 (common default) | UEFI; BIOS possible with suitable boot setup | `gdisk` | Modern systems, large disks |
 
+### 1. To Create Partitions, You Can Use `fdisk`
 
+> [!WARNING]
+> Partitioning and formatting can destroy data. Use only a disposable lab disk. Confirm the exact device with `lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS,MODEL` before continuing. The examples use `/dev/vdb`; do not copy the device name blindly.
 
-#### 1. To create partitions in Linux, you can use a tool called **fdisk**
+```bash
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS,MODEL
+sudo fdisk /dev/vdb
 ```
-sudo fdisk /dev/sda
-```
-* sudo: Gives you permission to make changes.
-* /dev/sda: This is your hard drive (it might be /dev/sdb or something else on your system).
+
+* `lsblk ...`: shows enough identity and mount information to verify the target.
+* `sudo`: runs the partition editor with administrative privileges.
+* `/dev/vdb`: is the disposable secondary disk in this example, not a universal device name.
 
 #### 2. Create a New Partition:
+
 * Press n and hit Enter to make a new partition.
-* Choose p for a primary partition.
-* Pick a number (1-4) for your partition.
+* On an MBR disk, choose `p` for a primary partition and select a number from 1 to 4. On a GPT disk, `fdisk` creates a normal GPT partition and does not use the MBR primary/extended distinction.
 * Set the size by choosing starting and ending points. (You can usually just press Enter to use the defaults and fill the space.)
 
 To see what partitions are already on your system, you can use these commands:
-```
+
+```text
 sudo fdisk -l
 ```
+
 a simple tree view of your drives and partitions
-```
+
+```text
 lsblk
 ```
+
 #### File system
+
 After creating partitions, they aren’t ready to use yet—you need to format them with a file system. A file system defines how data is stored, organized, and retrieved on the partition. In Linux, popular file systems include ext4, XFS, and Btrfs. Formatting is the process of applying a file system to a partition, making it ready to store files.
 
 A file system is like a blueprint for how data is arranged on a partition. It manages files, directories, and permissions, ensuring that the operating system can read and write data efficiently.
+
 * **ext4** : The most common and reliable choice for general use. It’s the default for many Linux distributions.
 * **XFS** : Great for handling large files and high-performance storage needs.
 * **Btrfs** : Offers advanced features like snapshots and data integrity checks, useful for more complex setups
 
 To format a partition with a file system, you can use the mkfs (make file system) command. Here’s how to format a partition as ext4:
 
-* 1. Identify Your Partition: Make sure you know the correct partition name, such as /dev/sda1. You can check this with lsblk or sudo fdisk -l.
-* 2. Format the Partition: Run the following command:
-```
-sudo mkfs.ext4 /dev/sda1
-```
-After formatting, you can verify the file system’s integrity using the fsck (file system check) command:
-```
-sudo fsck /dev/sda1
-```
-If fsck reports that the file system is "clean," everything is in order.
+* 1. Identify the unmounted lab partition. The example uses `/dev/vdb1`; verify yours with `lsblk -f` and `findmnt`.
+* 2. Format the verified partition. This erases any existing filesystem and data on that partition:
 
+```bash
+lsblk -f
+findmnt /dev/vdb1
+sudo mkfs.ext4 /dev/vdb1
+```
+
+* 3. Check it only while it is unmounted:
+
+```bash
+sudo umount /dev/vdb1 2>/dev/null || true
+sudo fsck -f /dev/vdb1
+```
+
+Never run a repair-mode `fsck` on a mounted read-write filesystem. For XFS, use XFS-specific tools such as `xfs_repair` while the filesystem is unmounted.
 
 #### Mounting
+
 Once a partition is formatted with a file system, it’s ready to store data—but you still need to mount it to access it. Mounting attaches the file system to a directory (like /mnt/data), making it part of the Linux directory structure so you can read and write files.
 Mounting is the process of linking a file system to a specific directory, called a mount point. Once mounted, you can access the files on that partition through the mount point directory.
 To mount a partition temporarily (until the next reboot), use the mount command:
+
+```text
+sudo mount /dev/vdb1 /mnt
 ```
-sudo mount /dev/sda1 /mnt
-```
-For the mount to persist across reboots, you need to add an entry to the /etc/fstab file:
-```
+
+For the mount to persist across reboots, back up `/etc/fstab` before editing it:
+
+```bash
+sudo cp -a /etc/fstab /etc/fstab.backup
 sudo vim /etc/fstab
 ```
+
 Add a Line for Your Partition:
-```
+
+```text
 UUID=xxxx /mnt ext4 defaults 0 2
 ```
-* UUID=xxxx: Replace xxxx with the UUID of your partition (you can find it with blkid /dev/sda1).
+
+* `UUID=xxxx`: replace `xxxx` with the UUID reported by `sudo blkid /dev/vdb1`.
 * /mnt: The mount point.
 * ext4: The file system type.
 * defaults: Standard mount options.
 * 0 2: Settings for backup and file system check order.
 
-After editing /etc/fstab, you can mount the partition with:
-```
+Validate the file before relying on it at boot, then test the mount:
+
+```bash
+sudo findmnt --verify --verbose
 sudo mount -a
+findmnt /mnt
 ```
+
+If validation fails, restore the backup or correct the entry before rebooting.
+
 #### Unmounting a File System
+
 When you no longer need access to the file system, you can unmount it using the umount command:
-```
+
+```text
 sudo umount /mnt
 ```
+
 This detaches the file system from the mount point, making the partition inaccessible until it’s mounted again.
 
-
 ## Argument
+
 In Linux, when you type a command into the terminal, it’s often made up of several parts: the command itself and its arguments. Arguments are additional pieces of information you provide to tell the command what to do or what to work on. Understanding arguments is a key skill for using the Linux command line effectively
 Arguments are the words or symbols that follow a command, separated by spaces. They can be:
 
@@ -708,17 +940,20 @@ In programming terms (like in shell scripts), arguments are numbered starting fr
 * **Argument 0** : The command itself.
 * **Argument 1, 2, etc.** : The options or operands that follow.
 
-```
+```text
 ls -l /boot
 ```
+
 * **ls** : The command (argument 0). It lists directory contents.
 * **-l** : An option (argument 1). It tells ls to use a long, detailed listing format.
 * **/boot** : An operand (argument 2). It specifies the directory to list.
 
 ## Files
+
 In Linux, everything is treated as a file—whether it’s a document, a directory, or even a piece of hardware. However, these "files" come in different types, each serving a unique purpose. Understanding these file types is essential for navigating and managing a Linux system effectively. Let’s explore the main types of files you’ll encounter.
 You can use the ls -l command to see a file’s type. The first character in the output tells you what kind of file it is. For example:
-```
+
+```text
 ls -l
 ```
 
@@ -732,16 +967,19 @@ ls -l
 | Named Pipe        | `p`    | `mypipe`            | Inter-process communication      |
 | Socket            | `s`    | `mysqld.sock`       | Network/local communication      |
 
-
 ## Addressing
+
 In Linux, when you navigate the filesystem or specify the location of a file or directory, you use paths. A path is like an address that tells the system where to find something. There are two main types of paths: absolute and relative. Understanding the difference is key to working efficiently in the terminal.
+
 1. Absolute Paths
    * Definition: An absolute path provides the full, exact location of a file or directory, starting from the root directory (/).
    * How It Works: It doesn’t depend on your current location in the filesystem—it always begins with / and lists every directory down to the target.
    * When to Use: Use absolute paths when you need to be specific, regardless of where you are in the system.
-```
+
+```text
 cat /home/user/documents/notes.txt
 ```
+
 2. Relative Paths
    * Definition: A relative path describes the location of a file or directory based on your current working directory (where you are in the filesystem). It doesn’t start with /.
    * How It Works: It uses your current position as a starting point and moves from there, often using special symbols like . (current directory) or .. (parent directory).
@@ -755,7 +993,7 @@ cat /home/user/documents/notes.txt
 
       ./passwd: Refers to /etc/passwd (. means "here").
 
-#### Special Symbols in Relative Paths
+### Special Symbols in Relative Paths
 
 . (Dot): Represents the current directory.
 
@@ -763,9 +1001,9 @@ Example:
 
   runs a script in your current directory.
 
-```
+```text
  ./script.sh
- ```
+```
 
 .. (Double Dot): Represents the parent directory (one level up).
 
@@ -773,9 +1011,9 @@ Example:
 
  refers to a file in the directory above your current one.
 
- ```
+```text
  ../file.txt
- ```
+```
 
  | Type           | Symbol/Start | Example                  | Description                          |
 |----------------|--------------|--------------------------|--------------------------------------|
@@ -785,181 +1023,251 @@ Example:
 ## A Toolbox of Commands
 
 1. **`grep`**: Searches for text patterns in files or input.
-   - **Example**: Find lines with "error" in a log.
-```
+   * **Example**: Find lines with "error" in a log.
+
+```text
      grep "error" log.txt
 ```
 
 2. **`tail`** : Displays the last lines of a file (default: 10)
-   - **Example** : View the last 5 lines of a log
-```
+   * **Example** : View the last 5 lines of a log
+
+```text
       tail -n 5 log.txt
 ```
+
 3. **`nl`** : Numbers the lines of a file or input.
-   - **Example**: Number all lines in a file
-```
+   * **Example**: Number all lines in a file
+
+```text
 nl notes.txt
 ```
+
 4. **`less`** : Shows file contents one page at a time for scrolling.
-   - **Example**: View a large file
-```
+   * **Example**: View a large file
+
+```text
 less bigfile.txt
 ```
+
 5. **`more`** : Similar to less, but simpler—displays text one screen at a time.
-   - **Example**: Read a file page by page
-```
+   * **Example**: Read a file page by page
+
+```text
 more log.txt
 ```
+
 6. **`head`** : Shows the first lines of a file (default: 10).
-   - **Example**: See the first 3 lines of a file
-```
+   * **Example**: See the first 3 lines of a file
+
+```text
 head -n 3 notes.txt
 ```
+
 7. **`sort`** : Sorts lines of text alphabetically or numerically.
-   - **Example**: Sort a list of names
-```
+   * **Example**: Sort a list of names
+
+```text
 sort names.txt
 ```
+
 8. **`wc`**: Counts lines, words, or characters in a file or input.
-   - **Example**: Count lines in a file
-```
+   * **Example**: Count lines in a file
+
+```text
 wc -l log.txt
 ```
+
 9. **`sed`**: Stream editor for modifying text (e.g., replace, delete).
-   - **Example**: Replace "old" with "new" in a file.
-```
+   * **Example**: Replace "old" with "new" in a file.
+
+```text
 sed 's/old/new/g' text.txt
 ```
+
 10. **`find`**: Searches for files or directories in a filesystem.
-   - **Example**: Find all .txt files in /home
-```
+   * **Example**: Find all .txt files in /home
+
+```text
 find /home -name "*.txt"
 ```
-   - **Example**: Find all files in / that size is between 10 and 50 MB
-```
+
+   * **Example**: Find all files in / that size is between 10 and 50 MB
+
+```text
 find / -size +10M -size -50M
 ```
-   - **Example**: Find all files in / that change time is less than 30 min ago
+
+   * **Example**: Find all files in / that change time is less than 30 min ago
+
+```text
+find / -cmin -30
 ```
-find / cmin -30
-```
+
 11. **`join`**: Combines lines from two files based on a common field.
-   - **Example**: Join two files (`file1.txt` and `file2.txt`) on their first column
-```
+   * **Example**: Join two files (`file1.txt` and `file2.txt`) on their first column
+
+```text
 join file1.txt file2.txt
 ```
+
 12. **`split`** : Breaks a file into smaller pieces.
+
     - **Example**: Split bigfile.txt into 100-line chunks, named part-
-```
+
+```text
 split -l 100 bigfile.txt part-
 ```
+
 13. **`tac`** : Displays a file’s lines in reverse order (opposite of cat).
-   - **Example**: Reverse the lines of notes.txt
-```
+   * **Example**: Reverse the lines of notes.txt
+
+```text
 tac notes.txt
 ```
+
 14. **`tee`** : Sends output to both a file and the screen (or another command).
-   - **Example**: Save ls output to a file while displaying it
-```
+   * **Example**: Save ls output to a file while displaying it
+
+```text
 ls -l | tee output.txt
 ```
+
 15. **`whereis`** : Locates the binary, source, and manual page files for a command.
-   - **Example**: Find where bash is installed
-```
+   * **Example**: Find where bash is installed
+
+```text
 whereis bash
 ```
+
 16. **`shutdown`**: Safely powers off, reboots, or halts the system with a specified time and optional message.
-   - **Example**: Shut down the system immediately.
-```
+   * **Example**: Shut down the system immediately.
+
+```text
 shutdown -h now
 ```
-   - **Example**: reboot in 10 Minutes with a Message
-```
+
+   * **Example**: reboot in 10 Minutes with a Message
+
+```text
 shutdown -r +10 "System rebooting for maintenance"
 ```
+
 17. **`uname -r`**: Displays the kernel release version of the Linux system.
-   - **Example**: 
+   * **Example**:
+
+```text
+uname -r
 ```
-uname -r 
-```
+
 18. **`hostnamectl`**: Manages and displays system hostname and related information.
-   - **Example**: 
-```
+   * **Example**:
+
+```text
 hostnamectl
 ```
-   - **Example**: set hostname
-```
+
+   * **Example**: set hostname
+
+```text
 sudo hostnamectl set-hostname newname
 ```
+
 19. **`expr`**: Evaluates expressions and performs basic arithmetic or string operations.
-   - **Example**: 
-```
+   * **Example**:
+
+```text
 expr 5 + 3
 ```
-20.  **`export`**: The export command in Linux is used to make variables available to other programs or processes that you run from your current shell session. In simpler terms, it’s like giving a variable a "passport" so it can travel beyond the shell you’re working in and be used by other commands, scripts, or applications you launch.
-   - **Example**: 
-```
+
+20. **`export`**: The export command in Linux is used to make variables available to other programs or processes that you run from your current shell session. In simpler terms, it’s like giving a variable a "passport" so it can travel beyond the shell you’re working in and be used by other commands, scripts, or applications you launch.
+   * **Example**:
+
+```text
 export NAME="Alice"
 echo "My name is $NAME"
 ```
+
 21. **`whatis`**: Displays a one-line description of a command from its manual page.
-   - **Example**: 
-```
+   * **Example**:
+
+```text
 whatis ls
 ```
-22. **`uniq`**: Filters out duplicate lines from sorted input or a file.
-   - **Example**: 
 
-```
+22. **`uniq`**: Filters out duplicate lines from sorted input or a file.
+   * **Example**:
+
+```text
 echo -e "apple\napple\nbanana" | uniq
 ```
+
 23. **`join`**: Combines lines from two files based on a common field.
-   - **Example**: 
+   * **Example**:
 * File1 (f1.txt): 1 apple
 * File2 (f2.txt): 1 red
-```
+
+```text
 join f1.txt f2.txt
 ```
+
 24. **`uptime`**: Shows how long the system has been running and current load averages.
-   - **Example**: 
-```
+   * **Example**:
+
+```text
 uptime
 ```
+
 ## Services
+
 ### 1. What is a Service?
+
 A service, often called a daemon, is a program that runs in the background, independent of any terminal or user session. Unlike interactive applications, services start automatically (often at boot) and don’t need user input to function. A long-running process that delivers a specific function, such as handling network requests or logging system events.
 
 ### 2. How Services Are Managed: Init Systems
+
 Services are controlled by the init system, the first process started by the Linux kernel during boot (with process ID 1). The init system oversees starting, stopping, and managing all other processes, including services. Two primary init systems are used in Linux:
 
 * **`SysVinit`**: The traditional init system found in older distributions.
 * **`systemd`**: The modern init system adopted by most current distributions (e.g., Ubuntu, Fedora, CentOS).
 
 ### 3. Managing Services with systemd
+
 systemd is the modern init system that has largely replaced SysVinit. It manages services through units (e.g., .service files) and provides a consistent command-line tool, systemctl.
 
 #### Start a Service:
-```
+
+```text
 sudo systemctl start service_name
 ```
+
 #### Stop a Service:
-```
+
+```text
 sudo systemctl stop service_name
 ```
+
 #### Restart a Service:
-```
+
+```text
 sudo systemctl restart service_name
 ```
+
 #### Enable a Service (auto-start on boot):
-```
+
+```text
 sudo systemctl enable service_name
 ```
+
 #### Disable a Service (prevent auto-start):
-```
+
+```text
 sudo systemctl disable service_name
 ```
+
 #### Check Service Status:
-```
+
+```text
 sudo systemctl status service_name
 ```
 
@@ -974,23 +1282,31 @@ sudo systemctl status service_name
 | **Dependencies**   | Manually defined in scripts  | Automatically managed by unit files  |
 
 ### 5. Monitoring and Troubleshooting Services
+
 #### 5.1 Checking Service Status
-```
+
+```text
 sudo systemctl status service_name
 ```
+
 #### 5.2 Viewing Service Logs
-```
+
+```text
 sudo journalctl -u apache2
 ```
+
 ## system log
 
 System logs are records of events and activities on a Linux system. They help administrators monitor performance, troubleshoot issues, and detect security problems. Logs are typically stored as text files and managed by a logging service.
 
 ### Key Logging Tools and Files
+
 * **`/var/log`**: The default directory where most log files are stored.
 * **`syslog or rsyslog`**: A common logging daemon that collects and writes log messages to files.
 * **`journalctl`**: A tool for viewing logs managed by systemd’s journal system (modern Linux distributions).
+
 ### Common Log Files
+
 * **`/var/log/syslog or /var/log/messages`**: General system logs (varies by distribution).
 * **`/var/log/auth.log or /var/log/secure`**: Authentication-related logs (e.g., login attempts).
 * **`/var/log/kern.log`**: Kernel-related messages.
@@ -999,28 +1315,37 @@ System logs are records of events and activities on a Linux system. They help ad
 #### Examples
 
 1. Viewing the Last 10 Lines of a Log File:
-```
+
+```text
 tail -n 10 /var/log/syslog
 ```
 
 2. Monitoring Logs in Real-Time:
-```
+
+```text
 tail -f /var/log/auth.log
 ```
+
 3. Using journalctl to View All Logs:
-```
+
+```text
 journalctl
 ```
+
 4. Filtering Logs by Service:
-```
+
+```text
 journalctl -u sshd
 ```
+
 5. Use grep to search logs:
-```
+
+```text
 grep "error" /var/log/syslog
 ```
 
 ## Archive and Compress
+
 Archiving and compression are key skills in Linux for managing files—whether you’re trying to save space, bundle files together, or share them with others. In this section, we’ll explore what archiving and compression mean, and dive into tools like zip, gzip, and unzip.
 
 * **Archiving**: This is when you combine multiple files or directories into a single file—like putting everything into one big box. Examples include .tar or .zip files. It’s great for organizing or transferring files.
@@ -1028,94 +1353,126 @@ Archiving and compression are key skills in Linux for managing files—whether y
 
 1. **zip**:  is a tool that both archives and compresses files or directories into a .zip file. It’s widely used because .zip files are compatible with many systems (Linux, Windows, etc.).
 
+* **Example**: Compress a Single File:
 
-- **Example**: Compress a Single File:
-```
+```text
 zip notes.zip notes.txt
 ```
-- **Example**: Compress multiple Files: Bundles file1.txt and file2.txt into backup.zip
-```
+
+* **Example**: Compress multiple Files: Bundles file1.txt and file2.txt into backup.zip
+
+```text
 zip backup.zip file1.txt file2.txt
 ```
-- **Example**: Compress a Directory: -r (recursive) includes all files and subdirectories in documents/ into docs.zip.
-```
+
+* **Example**: Compress a Directory: -r (recursive) includes all files and subdirectories in documents/ into docs.zip.
+
+```text
 zip -r docs.zip documents/
 ```
+
 2. **gzip**: compresses individual files, replacing them with a .gz version. Unlike zip, it doesn’t archive multiple files into one—it works on one file at a time. Reduces file size and adds a .gz extension, deleting the original unless specified otherwise.
-- **Example**: Compress a file and Keep the Original
-```
+* **Example**: Compress a file and Keep the Original
+
+```text
 gzip -k log.txt
 ```
-- **Example**: Compress with Maximum Compression:
-```
+
+* **Example**: Compress with Maximum Compression:
+
+```text
 gzip -9 bigfile.txt
 ```
+
 3. **unzip**: extracts files from a .zip archive, decompressing them and restoring the original files or directories. Reads the .zip file and unpacks its contents to your current directory (or a specified location).
 
-- **Example**: Unpacks all files from backup.zip into the current directory.
-```
+* **Example**: Unpacks all files from backup.zip into the current directory.
+
+```text
 unzip backup.zip
 ```
-- **Example**: Extract to a Specific Folder
-```
+
+* **Example**: Extract to a Specific Folder
+
+```text
 unzip docs.zip -d myfolder/
 ```
+
 4. **Archive**: Since gzip only compresses single files, it’s often paired with tar for archiving multiple files
-- **Example**: Create a .tar.gz (tar and gzip)
-```
+* **Example**: Create a .tar.gz (tar and gzip)
+
+```text
 tar -czf archive.tar.gz documents/
 ```
-- **Example**: Extract a .tar.gz
-```
+
+* **Example**: Extract a .tar.gz
+
+```text
 tar -xzf archive.tar.gz
 ```
+
 ## Wildcards
-Wildcards (also known as "globbing") in Linux are special characters used to represent or match other characters in filenames or commands. They allow you to work with multiple files at once without typing each name individually, acting like a search filter directly in your terminal. Wildcards are processed by the shell (e.g., Bash), not the commands themselves. When you use a wildcard, the shell expands it into a list of matching files before passing them to the command.
 
-There are three main wildcards in Linux:
+Wildcards (also known as "globbing") in Linux are special characters used to represent or match other characters in filenames or commands. They allow you to work with multiple files at once without typing each name individually, acting like a search filter directly in your terminal. Wildcards are processed by the shell (for example, Bash), not by the commands themselves. The shell expands a wildcard into matching pathnames before it runs the command.
 
-* 1. *(Asterisk): The * wildcard matches any number of characters, including zero. It’s the most flexible and widely used wildcard. It can match part of a filename or an entire filename
-- **Example**: List all .txt files:
-```
-ls *.txt
-```
-- **Example**: List all files starting with "log":
-```
-ls log*
-```
+There are three main wildcard forms:
 
-* 2. ? (Question Mark): matches exactly one character—any character, but only one. It’s useful when you know the length of a filename but not the exact characters
-- **Example**: List two-letter files:
-```
-ls ??
-```
+1. **Asterisk (`*`)**: matches any number of characters, including zero. It can match part of a filename or an entire filename.
 
-* 3. (Square Brackets) []: let you specify a set or range of characters to match at a specific position. You can list individual characters (e.g., [abc]) or a range (e.g., [a-c] for a, b, or c).
-- **Example**: List files starting with "a", "b", or "c"
-```
-ls [abc]*
-```
-- **Example**: List files with a digit in the second position
-```
-ls ?[0-9].txt
-```
-- **Example**: List files ending with "a" or "b":
-```
-ls *.[ab]
-```
-- **Example**: List files starting with "data", followed by one character, ending with ".txt"
-```
+   Example: list all `.txt` files:
+
+   ```text
+   ls *.txt
+   ```
+
+   Example: list all files starting with `log`:
+
+   ```text
+   ls log*
+   ```
+
+2. **Question mark (`?`)**: matches exactly one character. It is useful when you know the length or shape of a filename but not one character.
+
+   Example: list two-character filenames:
+
+   ```text
+   ls ??
+   ```
+
+3. **Square brackets (`[]`)**: match one character from a set or range at a specific position, such as `[abc]` or `[a-c]`.
+
+   Example: list files starting with `a`, `b`, or `c`:
+
+   ```text
+   ls [abc]*
+   ```
+
+   Example: list `.txt` files with a digit in the second position:
+
+   ```text
+   ls ?[0-9].txt
+   ```
+
+   Example: list files whose one-character extension is `.a` or `.b`:
+
+   ```text
+   ls *.[ab]
+   ```
+
+Additional examples:
+
+```text
 ls data?.txt
-```
-- **Example**: Copy Multiple Files
-```
 cp *.txt backup/
-```
-- **Example**: Lists all .log files in /var/log
-```
 ls /var/log/*.log
 ```
-## Swap memory 
+
+* `ls data?.txt` matches `data`, one character, then `.txt`.
+* `cp *.txt backup/` copies matching text files to `backup/`.
+* `ls /var/log/*.log` lists matching log files in `/var/log`.
+
+## Swap memory
+
 is an essential component of Linux systems that helps manage memory efficiently. It acts as a backup when the physical RAM (Random Access Memory) is fully utilized, allowing the system to continue running smoothly. In this document, we’ll explore what swap memory is, why it’s important, how to set it up, and how to manage and monitor it effectively.
 
 Swap memory, also known as swap space, is a designated area on a hard drive (or other storage devices) that the operating system uses as an extension of the physical RAM. When the system runs low on available RAM, it moves inactive or less frequently used data from RAM to the swap space. This process is called swapping, and it frees up RAM for more critical tasks.
@@ -1135,69 +1492,97 @@ Swap memory serves several key purposes:
 Without swap, the system could freeze, crash, or terminate processes unexpectedly when RAM is fully consumed.
 
 ### Setting Up Swap Memory
+
 There are two primary ways to set up swap in Linux: using a swap partition or a swap file. Both methods achieve the same goal, but they differ in flexibility and setup complexity.
 
 1. Swap Partition
 
-A swap partition is a dedicated section of the hard drive set aside exclusively for swap. It’s typically created during the Linux installation process, but you can also add one later.
+A swap partition is a dedicated section of a storage device reserved for swap. It is often created during installation, but you can add one later.
 
+> [!WARNING]
+> Creating a partition or running `mkswap` on the wrong device destroys existing filesystem metadata. Use a disposable lab disk and verify it with `lsblk -f` and `findmnt`.
 
-   * 1.1 Create the Partition: Use a tool like fdisk, gdisk, or parted to create a new partition. Set the partition type to "Linux swap" (type 82 in fdisk).
+   * 1.1 Create the Partition: Use a tool like fdisk, gdisk, or parted to create a new partition. Set the partition type to Linux swap. On an MBR disk the historical type code is `82`; on GPT, choose the Linux swap type offered by the tool.
+
+```bash
+lsblk -f
+sudo fdisk /dev/vdb
 ```
-sudo fdisk /dev/sda
-```
 
-Press n to create a new partition, choose a partition number, and specify the size.
+Press `n` to create a partition and specify its size. Press `t` to select the Linux swap type; the exact menu or code depends on whether the disk uses MBR or GPT.
 
-Press t to set the type to 82 (Linux swap).
 * 1.2 Format the Partition: Use mkswap to prepare the partition for swap usage
+
+```text
+sudo mkswap /dev/vdb2
 ```
-sudo mkswap /dev/sdaX
-```
+
 * 1.3  Activate the Swap Partition: Use swapon to enable the swap space.
+
+```text
+sudo swapon /dev/vdb2
 ```
-sudo swapon /dev/sdaX
-```
+
 2. Swap File
+
 A swap file is a file within an existing filesystem that is used as swap space. It’s more flexible than a partition because it doesn’t require repartitioning the disk.
 
 * 2.1 Create the File: Use dd to create a file of the desired size. For example, to create a 1GB swap file:
-```
+
+```text
 sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
 ```
+
 * 2.2 Set Permissions: Ensure only root can access the swap file.
-```
+
+```text
 sudo chmod 600 /swapfile
 ```
+
 * 2.3 Format the File: Use mkswap to set up the file as swap.
-```
+
+```text
 sudo mkswap /swapfile
 ```
+
 * 2.4 Activate the Swap File: Use swapon to enable it.
-```
+
+```text
 sudo swapon /swapfile
 ```
+
 3. Activating Swap Automatically at Boot
 
 To ensure that your swap space (partition or file) is activated automatically when the system boots, you need to add an entry to the /etc/fstab file.
 
 * 3.1 Find the UUID of the swap partition:
+
+```text
+sudo blkid /dev/vdb2
 ```
-sudo blkid /dev/sdaX
-```
+
 * 3.2 Add the following line to /etc/fstab:
-```
+
+```text
 UUID=your-uuid-here none swap sw 0 0
 ```
+
 * 3.3 for aswap file:
-```
+
+```text
 /swapfile none swap sw 0 0
 ```
-* 3.4 After editing /etc/fstab, you can test the configuration with:
+
+* 3.4 After editing `/etc/fstab`, validate and test swap entries with:
+
+```bash
+sudo findmnt --verify --verbose
+sudo swapon --all
+swapon --show
 ```
-sudo mount -a
-```
+
 #### Monitoring
+
 Below is an example output of the free -h command, followed by a detailed explanation of each column. The free -h command displays memory usage information in a human-readable format on a Linux system.
 
 * Example Output of free -h
@@ -1208,6 +1593,7 @@ Below is an example output of the free -h command, followed by a detailed explan
 | **Swap:** | 2.0G | 0.0K | 2.0G | - | - | - |
 
 1. Mem Row (Physical RAM)
+
 total
 
 **Value**: 7.7G
@@ -1220,9 +1606,9 @@ total
 
 **Value**: 1.2G
 
-**Meaning**: The amount of RAM currently in use by running processes.
+**Meaning**: Calculated used memory in the displayed accounting.
 
-**Explanation**: Here, 1.2 gigabytes of RAM are actively being used by applications and the operating system. This does not include memory used for buffers or cache (explained later).
+**Explanation**: The exact calculation depends on the installed `procps-ng` version. For capacity decisions, the `available` column is usually more useful because it estimates how much memory can be given to new applications without swapping.
 
 * 1.2 free
 
@@ -1261,6 +1647,7 @@ Here, 1.0 gigabyte is used for these purposes. This memory can be quickly reclai
 **Explanation**: This is a more practical indicator of usable memory than the "free" column. It includes free memory (5.5G) plus memory that can be freed from buffers and cache. In this case, 6.3 gigabytes are available, showing the system has ample memory for new tasks.
 
 1. Swap Row (Swap Space)
+
 The Swap row has fewer columns, focusing on swap space (disk-based virtual memory):
 
 * 2.1 total
@@ -1287,8 +1674,8 @@ Explanation: This system has 2.0 gigabytes of swap space, which acts as an overf
 
 **Explanation**: All 2.0 gigabytes of swap are free, meaning the system has not needed to use swap yet.
 
-
 ## Process
+
 In Linux, a process is an instance of a running program. It includes the program’s code, its data (like variables), and the system resources it uses, such as memory, CPU time, and open files. Every process is assigned a unique identifier called a Process ID (PID), which the operating system uses to track and manage it. Processes are fundamental to how Linux operates, and knowing how to view, monitor, manage, and terminate them is essential for system administration or everyday use
 
 A process can be in one of several states, which describe what it’s doing at any given time. You’ll see these states when viewing processes (e.g., in the S column of ps output):
@@ -1306,7 +1693,8 @@ A process can be in one of several states, which describe what it’s doing at a
 The ps command gives you a static list of processes at a given moment.
 
 Basic Usage:
-```
+
+```text
 ps
 ```
 
@@ -1327,21 +1715,26 @@ Explanation:
 
 **`CMD`**: The command or program running.
 
-- **Example**: Displays processes owned by a specific user.
-```
+* **Example**: Displays processes owned by a specific user.
+
+```text
 ps -u username
 ```
-- **Example**: Shows every process on the system.
-```
+
+* **Example**: Shows every process on the system.
+
+```text
 ps -e
 ```
+
 2. Top
 
 top shows a dynamic, real-time view of processes, sorted by resource usage (CPU by default).
 
-```
+```text
 top
 ```
+
 * **`PID`**: Process ID.
 * **`USER`**: Owner of the process.
 * **`%CPU`**: CPU usage percentage.
@@ -1353,11 +1746,13 @@ top
 * Press u to filter by user.
 
 3. htop
+
 htop is a more user-friendly alternative to top, with colors, mouse support, and a better interface.
 
-```
+```text
 htop
 ```
+
 * Use arrow keys to select a process.
 * Press F9 to send a signal (e.g., terminate).
 * Press F5 to see processes in a tree view.
@@ -1365,41 +1760,55 @@ htop
 ### Managing Processes
 
 1. Running in the Background
+
 Starts a process without tying up your terminal.
 
-```
+```text
 sleep 100 &
 ```
+
 2. Bringing to the Foreground
+
 Moves a background process to the foreground
 
-```
+```text
 fg %1
 ```
+
 ### Killing a process
+
 To stop a process, you send it a signal. Common signals include SIGTERM (graceful stop) and SIGKILL (forceful stop).
 
 1. kill - Send Signal by PID
-```
+
+```text
 kill 1234
 ```
+
 Sends SIGTERM to PID 1234, asking it to exit cleanly.
 
 2. Forceful Kill:
-```
+
+```text
 kill -9 1234
 ```
+
 3. pkill - Kill by Name or Attribute
+
 Targets processes by name or other properties.
-```
+
+```text
 pkill -f firefox
 ```
+
 4. killall - Kill All by Name
 
-```
+```text
 killall firefox
 ```
+
 ### nice
+
 The nice command is a utility in Linux that allows you to launch a process with a modified scheduling priority, known as its nice value. The nice value is a number that tells the system how "nice" a process should be to others—essentially, how much CPU time it should get relative to other processes. A lower nice value means higher priority (more CPU time), while a higher nice value means lower priority (less CPU time).
 
 * **`-20`**: Highest priority (the process gets the most CPU time).
@@ -1417,38 +1826,46 @@ Think of nice values like a politeness scale:
 
 For example, a process with a nice value of 10 will yield CPU time to one with 0, but both will still run, depending on system load.
 
-- **Example**: Launches ffmpeg (a video encoder) with a nice value of 10, reducing its CPU priority so other tasks aren’t slowed down.
+* **Example**: Launches ffmpeg (a video encoder) with a nice value of 10, reducing its CPU priority so other tasks aren’t slowed down.
 
-```
+```text
 nice -n 10 ffmpeg -i input.mp4 output.mp4
 ```
-- **Example**: Run a Command with Higher Priority (Root Only): 
-```
+
+* **Example**: Run a Command with Higher Priority (Root Only):
+
+```text
 sudo nice -n -5 important_task.sh
 ```
 
-- **Example**: Check a Process’s Nice Value: 3955
-```
+* **Example**: Check a Process’s Nice Value: 3955
+
+```text
 ps -o pid,ni -p 3955
 ```
 
-- **Example**: Lower the Priority of a Running Process: Changes the nice value of process ID 5678 to 15, reducing its priority.
-```
+* **Example**: Lower the Priority of a Running Process: Changes the nice value of process ID 5678 to 15, reducing its priority.
+
+```text
 renice -n 15 -p 5678
 ```
 
 #### Points
 
 * A regular user can only change the nice value between 0 and +19.
+
 (In Linux, the nice value determines the priority of a process. Higher nice values mean lower priority.)
 
 * Only the root user can set a process's nice value to a negative number.
+
 (Negative nice values increase the priority of a process, allowing it to get more CPU time.)
 
 * A regular user cannot increase the priority of a process. This means if a user changes a process's nice value from 0 to 4, they cannot later change it back to 2 (a lower nice value) because it would increase the priority.
+
 (Only root can lower the nice value, which effectively raises the process priority.)
 
 * Process priority becomes relevant only when there is contention, meaning when multiple processes are competing for system resources.
+
 (If there is no resource contention, nice values have no practical effect because all processes get enough CPU time.)
 
 ## Hard Links and Soft Links in Linux
@@ -1456,12 +1873,14 @@ renice -n 15 -p 5678
 In Linux, links provide a way to reference files or directories from multiple locations without duplicating the data. There are two main types of links: `hardlinks` and `softlinks` (symbolic links). Understanding their differences and use cases is essential for effective file management, whether you’re organizing files, performing backups, or administering a system.
 
 ### 1. What is a Link?
+
 A link is a pointer to a file or directory. It allows you to access the same data using multiple filenames, making file management more efficient without creating redundant copies.
 
 * **`Hard Link`**: A direct reference to the file’s data on the disk.
 * **`Soft Link (Symlink)`**: A reference to another filename, which then points to the data.
 
 ### 2. Hard Links
+
 A hard link is an additional name for an existing file. It directly references the file’s data via its inode—a data structure in the filesystem that stores metadata (like permissions and ownership) and points to the file’s data blocks on the disk. When you create a hard link, both the original filename and the new hard link point to the same inode and data.
 
 Key Characteristics of Hard Links:
@@ -1469,22 +1888,25 @@ Key Characteristics of Hard Links:
 * **`Same Inode`**: The hard link and the original file share the same inode number.
 * **`No "Original" File`**: There’s no distinction between the original and the hard link—they’re equal references to the same data.
 * **`Filesystem Limitation`**: Hard links can only be created within the same filesystem.
-* **`Files Only`**: Hard links are typically for files, not directories (though root users can link directories, it’s rare and not recommended).
+* **`Files Only`**: Normal Linux administration prohibits creating hard links to directories because doing so could break filesystem tree integrity.
 * **`Data Persistence`**: The data remains on the disk as long as at least one hard link exists. Deleting one link doesn’t affect the others or the data.
 
 * Use the ln command without options:
 
-```
+```text
 ln report.txt report_backup.txt
 ```
+
 Now, report.txt and report_backup.txt are two names for the same file. Editing one changes the other because they share the same data.
 
-
 * Use ls -i to display inode numbers
-```
+
+```text
 ls -i report.txt report_backup.txt
 ```
+
 ### 3. Soft Links (Symbolic Links)
+
 A soft link (or symbolic link) is a special type of file that points to another file or directory by its path. Unlike a hard link, a soft link doesn’t reference the data directly—it points to the target’s filename, which then resolves to the data. This makes symlinks more flexible but also prone to becoming "broken" if the target is moved or deleted.
 
 Key Characteristics of Soft Links:
@@ -1495,21 +1917,26 @@ Key Characteristics of Soft Links:
 * **`Broken Links`**: If the target file or directory is deleted or moved, the symlink becomes broken and points to nothing.
 * **`Permissions`**: The symlink’s permissions are independent, but access to the target is governed by the target’s permissions.
 
-- **Example**: file
-```
+* **Example**: file
+
+```text
 ln -s report.txt report_link
 ```
-- **Example**: directory
-```
+
+* **Example**: directory
+
+```text
 ln -s /var/log logs
 ```
+
 Now, logs is a symlink to /var/log. You can use cd logs to access /var/log.
 
-
 * Use ls -l to view the link and its target:
-```
+
+```text
 ls -l report_link
 ```
+
 ### 4. Key Differences Between Hard Links and Soft Links
 
 | Feature            | Hard Link                          | Soft Link (Symlink)                |
@@ -1523,6 +1950,7 @@ ls -l report_link
 | **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
 ## Cron Jobs in Linux
+
 A cron job is a scheduled task in Linux that runs automatically at specified times or intervals. Managed by the cron daemon (a background service), cron jobs are widely used to automate repetitive tasks such as backups, system maintenance, or sending reports. This document provides everything you need to understand and implement cron jobs.
 A cron job is a command or script scheduled to execute at specific times without manual intervention. It’s a time-based job scheduler that helps automate tasks, making it an essential tool for system administration.
 
@@ -1532,15 +1960,17 @@ A cron job is a command or script scheduled to execute at specific times without
 * Running system updates or health checks
 
 ### 1. How Cron Works
+
 The cron daemon (crond) runs continuously in the background, checking crontab (cron table) files for scheduled tasks. Each user can have their own crontab, and there’s a system-wide crontab for root-level tasks.
 
 ### 2. Cron Schedule Format
+
 A cron job is defined by a line in the crontab file with six parts:
 
 Five time fields: Minute, Hour, Day of the Month, Month, Day of the Week
 Command: The task to execute
 
-```
+```text
 * * * * * command_to_run
 | | | | |
 | | | | +-- Day of the week (0-6) (Sunday=0 or 7)
@@ -1549,6 +1979,7 @@ Command: The task to execute
 | +-------- Hour (0-23)
 +---------- Minute (0-59)
 ```
+
 * **(`*`)**: Every (e.g., every minute, every hour)
 * **`Numbers`**: Specific values (e.g., 5 for 5th minute)
 * **`Ranges`**: Use - (e.g., 1-5 for Monday to Friday)
@@ -1556,64 +1987,73 @@ Command: The task to execute
 * **`Steps`**: Use / (e.g., */10 for every 10 minutes)
 
 ### 3. Setting Up Cron Jobs
+
 Use the crontab command to create or manage cron jobs.
 
 #### Edit Crontab:Opens the crontab file in your default editor.
-```
+
+```text
 crontab -e
 ```
+
 #### List Cron Jobs: Shows your current cron jobs.
-```
+
+```text
 crontab -l
 ```
+
 #### Remove All Cron Jobs: Deletes your entire crontab.
-```
+
+```text
 crontab -r
 ```
+
 #### Edit Another User’s Crontab (as root):
-```
+
+```text
 sudo crontab -e -u username
 ```
+
 ### 4. Writing Cron Job Entries
+
 Here are practical examples of cron job schedules:
 
 #### Run a Script Daily at 2:30 AM:
-```
+
+```text
 30 2 * * * /path/to/script.sh
 ```
+
 * Minute: 30
 * Hour: 2
 * Day/Month/Week: * (every)
 
 #### Run a Command Every 15 Minutes:
-```
+
+```text
 */15 * * * * /path/to/command
 ```
+
 * Minute: */15 (every 15 minutes)
 * Others: * (every)
 
 #### Backup Database Every Sunday at Midnight:
+
+```text
+0 0 * * 0 /usr/bin/mysqldump --defaults-extra-file=/root/.my.cnf dbname > /backup/db.sql
 ```
-0 0 * * 0 /usr/bin/mysqldump -u user -p password dbname > /backup/db.sql
-```
+
 * Minute: 0
 * Hour: 0
 * Day of Week: 0 (Sunday)
+* Store database credentials in `/root/.my.cnf`, restrict it with `chmod 600 /root/.my.cnf`, and never put plaintext passwords in a crontab or command argument.
 
 #### Run a Job on the 1st and 15th of Every Month at 8:00 AM:
-```
+
+```text
 0 8 1,15 * * /path/to/report.sh
 ```
+
 * Minute: 0
 * Hour: 8
 * Day of Month: 1,15
-
-
-
-
-
-
-
-
-
-
