@@ -5,10 +5,12 @@ This repository is a beginner-friendly, objective-aligned study guide for Linux 
 - Exam 101-500
 - Exam 102-500
 
-The guide explains concepts before commands, breaks important commands into their parts, includes safe hands-on labs, and provides exercises with a separate answer key.
+The guide explains concepts before commands, breaks important commands into their parts, includes safe hands-on labs, and provides exercises plus two weighted 60-question mock exams with separate answer keys.
 
 > [!IMPORTANT]
-> The original author notes remain available in [`LPic1.md`](LPic1.md). Useful explanations are preserved. Confirmed technical mistakes are corrected instead of deleting the author's work.
+> The original author notes remain available in [`LPic1.md`](LPic1.md), but the
+> objective-aligned chapters below are the primary study path. Useful original
+> explanations are preserved and confirmed technical mistakes are corrected.
 
 ## Start here
 
@@ -17,6 +19,7 @@ The guide explains concepts before commands, breaks important commands into thei
 3. Perform labs only on a disposable virtual machine.
 4. Complete the exercises before opening the answer key.
 5. Use the [coverage matrix](OBJECTIVES.md) to track progress.
+6. Finish with the [junior-readiness checklist](JUNIOR-READINESS.md) and both timed mocks.
 
 ## Exam 101-500
 
@@ -43,6 +46,9 @@ The guide explains concepts before commands, breaks important commands into thei
 - [Hands-on labs](labs/README.md)
 - [Chapter exercises and mock questions](exercises/questions.md)
 - [Answer key and explanations](exercises/answers.md)
+- [Timed mock 101-500](exercises/mock-101.md) and [explained answers](exercises/mock-101-answers.md)
+- [Timed mock 102-500](exercises/mock-102.md) and [explained answers](exercises/mock-102-answers.md)
+- [LPIC-1 and junior Linux readiness](JUNIOR-READINESS.md)
 - [Command safety checklist](SAFETY.md)
 - [Official references](REFERENCES.md)
 - [Quality check and completion evidence](QUALITY-CHECK.md)
@@ -77,4 +83,21 @@ Add a separate disposable virtual disk to a VM for partitioning exercises. Never
 
 The canonical scope is the [official LPI LPIC-1 objectives](https://www.lpi.org/our-certifications/exam-101-102-objectives/). Technical behavior is cross-checked against upstream manuals and official project documentation listed in [REFERENCES.md](REFERENCES.md).
 
+The currently published objectives are version 5.0 (`101-500` and `102-500`).
+LPI describes each exam as 60 multiple-choice/fill-in questions in 90 minutes;
+the two timed mocks mirror that public format and objective-weight distribution.
+No independent guide can guarantee the unpublished live questions or every
+employer's junior interview scope.
+
 This is an independent study guide and is not an official LPI publication.
+
+## Repository validation
+
+Run the dependency-free structural check after editing study content:
+
+```bash
+python3 scripts/check_repo.py
+```
+
+It verifies all 42 objective headings/mappings, the two 60-question mock and
+answer sequences, chapter/mixed question counts, code fences and relative links.

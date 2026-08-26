@@ -104,7 +104,7 @@ Line by line:
 
 | Line | Explanation |
 |---|---|
-| `#!/usr/bin/env bash` | Selects Bash found through `PATH`; use `#!/bin/bash` when a fixed system path is required |
+| `#!/usr/bin/env bash` | The shebang selects Bash found through `PATH`; use `#!/bin/bash` when a fixed system path is required |
 | blank line | Separates interpreter declaration from logic |
 | `set -o nounset` | Treats unintended use of unset variables as an error |
 | `name=${1:-world}` | Uses argument 1, or `world` when unset/empty |

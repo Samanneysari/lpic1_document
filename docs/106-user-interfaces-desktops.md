@@ -116,7 +116,7 @@ Accessibility enables users with visual, hearing, motor or cognitive needs to op
 - Braille displays
 - screen magnifiers
 - on-screen keyboards
-- sticky, slow, bounce and toggle keys
+- sticky, repeat, slow, bounce and toggle keys
 - mouse keys and alternative pointing methods
 - gestures and voice recognition
 

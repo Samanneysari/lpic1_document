@@ -4,6 +4,10 @@
 
 A disk layout should reflect workload, recovery needs, firmware, encryption, growth and backup strategy. Splitting data into filesystems can contain failures and apply different mount options, but every extra boundary also creates a capacity-planning decision.
 
+A partition is a defined region of a disk. A filesystem organizes data on a
+partition, logical volume or other block device. A mount point is the directory
+where that filesystem is attached to Linux's single directory tree.
+
 ### Common layout decisions
 
 | Mount or area | Why it may be separate |
@@ -264,7 +268,12 @@ This extracts into the current directory. Inspect paths and use a disposable dir
 
 ## 102.6 Linux as a virtualization guest
 
-A virtual machine emulates or exposes virtual hardware and runs its own kernel. A container isolates processes while normally sharing the host kernel. An IaaS instance commonly combines compute, virtual networking, block storage, metadata and an operating-system image.
+A virtual machine emulates or exposes virtual hardware and runs its own kernel.
+A Linux system container provides an OS-like userspace while normally sharing
+the host kernel; an application container packages one application and its
+runtime with the same shared-kernel model. An IaaS instance commonly combines
+compute, virtual networking, block storage, metadata and an operating-system
+image.
 
 A system image is a reusable filesystem or disk template used to create virtual
 machines and cloud instances. A container image is a layered application
@@ -274,13 +283,16 @@ instance-specific identity and secrets are generated at deployment time.
 
 ### Guest integration
 
-Guest agents and optimized drivers can provide clean shutdown, time coordination, network/storage performance, IP reporting and snapshot support. Examples include QEMU guest agent, VMware tools and Hyper-V Linux integration services.
+Guest agents and optimized guest drivers can provide clean shutdown, time
+coordination, network/storage performance, IP reporting and snapshot support.
+Examples include QEMU guest agent, VMware tools and Hyper-V Linux integration
+services.
 
 ### Cloning safely
 
 A template must not produce clones with the same identity or secret host keys. Depending on distribution and provisioning system, review:
 
-- `/etc/machine-id`
+- D-Bus machine ID in `/etc/machine-id`
 - SSH host keys under `/etc/ssh/`
 - DHCP leases
 - persistent network rules and MAC-address matches

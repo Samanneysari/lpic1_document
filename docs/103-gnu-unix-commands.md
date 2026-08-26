@@ -61,6 +61,7 @@ Useful commands:
 
 ```bash
 pwd
+echo "$SHELL"
 type cd
 type -a python
 which ls
@@ -70,6 +71,10 @@ history 10
 ```
 
 `type` understands built-ins, aliases, functions and hashed commands. `which` searches executable paths but may not describe shell built-ins consistently. `command -v` is useful in portable shell scripts.
+
+`echo` is a commonly tested shell builtin for simple output, but its handling
+of options and backslash escapes varies. Prefer `printf` when exact portable
+formatting matters.
 
 `PATH` is a colon-separated search list:
 
@@ -373,7 +378,13 @@ ps -ef
 ps -o pid,ppid,user,stat,ni,cmd -p 1
 pgrep -a sshd
 top
+free -h
+uptime
 ```
+
+`free` summarizes physical and swap memory. `uptime` reports time since boot,
+logged-in user count and load averages. Load average counts runnable and
+uninterruptible tasks; it is not a direct CPU-percent value.
 
 Common state letters include `R` running/runnable, `S` interruptible sleep, `D` uninterruptible sleep, `T` stopped and `Z` zombie.
 
@@ -407,7 +418,7 @@ watch -n 2 'ps -eo pid,stat,%cpu,%mem,cmd --sort=-%cpu | head'
 
 ## 103.6 Process priorities
 
-The nice value normally ranges from -20 (more favorable CPU scheduling priority) to 19 (less favorable). It is a hint within the scheduler, not a guaranteed CPU percentage.
+The nice value normally ranges from -20 (more favorable CPU scheduling priority) to 19 (less favorable). A normally created process starts at nice value 0 and inherits changes from its parent. Nice is a scheduler hint, not a guaranteed CPU percentage.
 
 ```bash
 nice -n 10 command
@@ -434,7 +445,7 @@ Globs match pathnames in the shell. Regular expressions describe text patterns f
 | `+` | One or more in extended regex |
 | `?` | Zero or one in extended regex |
 | `{m,n}` | Repetition range in extended regex |
-| `(one\|two)` | Group and alternation in extended regex |
+| `(one|two)` | Group and alternation in extended regex |
 
 ```bash
 grep '^root:' /etc/passwd
@@ -444,6 +455,10 @@ grep -v '^[[:space:]]*#' config.conf
 ```
 
 `grep` uses basic regular expressions by default. `grep -E` uses extended expressions. `grep -F` treats patterns as fixed strings. Historical commands `egrep` and `fgrep` correspond to `grep -E` and `grep -F` but the option forms are preferred.
+
+Read `man 7 regex` (`regex(7)`) for the local implementation's BRE/ERE
+notation. In BRE, grouping and alternation commonly need backslashes, for
+example `\(one\|two\)`; in ERE the equivalent is `(one|two)`.
 
 ### sed substitution and deletion
 

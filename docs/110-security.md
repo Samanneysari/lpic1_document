@@ -28,6 +28,7 @@ sudo passwd alice
 sudo chage -l alice
 sudo chage -m 1 -M 90 -W 14 alice
 sudo passwd -S alice
+sudo usermod -L alice
 ```
 
 `/etc/shadow` stores password hashes and aging fields, not plaintext passwords. Root-readable hashes still require protection because offline guessing is possible. Use long unique passwords, MFA where available and secure recovery procedures.
@@ -36,6 +37,7 @@ sudo passwd -S alice
 
 ```bash
 sudo ss -lntup
+sudo netstat -lntup
 sudo lsof -nP -i
 sudo nmap -sT -sV 127.0.0.1
 ```
@@ -43,6 +45,7 @@ sudo nmap -sT -sV 127.0.0.1
 | Command | Viewpoint |
 |---|---|
 | `ss` | Kernel socket table on the host |
+| `netstat` | Legacy socket view retained for exam recognition |
 | `lsof -i` | Processes with Internet sockets |
 | `nmap` | Network scan from the scanning host's viewpoint |
 
@@ -138,6 +141,9 @@ Use masking only when intentional; it can break dependent software.
 
 ### Login controls
 
+- `/etc/passwd` normally contains an `x` placeholder while protected password
+  hashes and aging fields live in `/etc/shadow`; this is the shadow-password
+  model.
 - `/etc/nologin` can prevent non-root logins through cooperating login programs.
 - `/usr/sbin/nologin` or `/bin/false` is commonly assigned to service accounts that do not need shells.
 - A locked password does not disable public-key, token or service-specific authentication.
@@ -202,6 +208,15 @@ ssh alice@server.example.net
 Use a passphrase for human-operated private keys and an agent to avoid repeated entry. Automation keys should be narrowly authorized and protected with platform-appropriate secret controls.
 
 RSA and ECDSA are also recognized by the objective. DSA is obsolete and should not be deployed even though historical filenames may appear in an exam list.
+
+Recognize the historical/default key filenames named by the objective:
+
+| User key pair | Corresponding server host-key pair |
+|---|---|
+| `~/.ssh/id_rsa` and `.pub` | `/etc/ssh/ssh_host_rsa_key` and `.pub` |
+| `~/.ssh/id_dsa` and `.pub` | `/etc/ssh/ssh_host_dsa_key` and `.pub` (obsolete) |
+| `~/.ssh/id_ecdsa` and `.pub` | `/etc/ssh/ssh_host_ecdsa_key` and `.pub` |
+| `~/.ssh/id_ed25519` and `.pub` | `/etc/ssh/ssh_host_ed25519_key` and `.pub` |
 
 ### Client configuration
 

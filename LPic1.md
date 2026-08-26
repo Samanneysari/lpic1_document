@@ -547,7 +547,12 @@ sudo apt update
 
 #### Upgrade
 
-The upgrade command updates all currently installed packages to their latest versions based on the repository data (which requires a prior update). It downloads and installs newer versions of software already on your system but does not add new packages or remove existing ones.
+The upgrade command updates installed packages using the available repository
+metadata. `apt upgrade` may install new dependency packages when required but
+does not remove installed packages to complete an upgrade. The lower-level
+`apt-get upgrade` is more conservative and does not install or remove packages;
+`apt-get dist-upgrade`/`apt full-upgrade` may add or remove packages after
+showing the proposed transaction. Always inspect the plan before accepting it.
 
 ```text
 sudo apt upgrade
@@ -564,7 +569,7 @@ sudo apt install htop
 | Command  | Purpose                               | Affects Installed Software? | Adds New Packages? | Requires Update First? |
 |----------|---------------------------------------|----------------------------|---------------------|------------------------|
 | update   | Syncs package list with repositories | No                         | No                  | N/A                    |
-| upgrade  | Updates all installed packages       | Yes (updates versions)     | No                  | Yes                    |
+| upgrade  | Updates eligible installed packages  | Yes (updates versions)     | Sometimes with `apt upgrade`; not with `apt-get upgrade` | Fresh metadata required for a current plan |
 | install  | Installs a specific new package      | Yes (adds new software)    | Yes                 | No (but recommended)   |
 
 * apt update only updates the list or metadata of packages (and it's usually small in size).
@@ -1798,8 +1803,13 @@ kill -9 1234
 Targets processes by name or other properties.
 
 ```text
-pkill -f firefox
+pgrep -a -f firefox
+pkill -TERM -f firefox
 ```
+
+`-f` matches the entire command line and can select more processes than
+expected. Inspect the `pgrep` result first; use exact-name matching (`-x`) when
+that is the intended scope.
 
 4. killall - Kill All by Name
 
@@ -1915,7 +1925,7 @@ Key Characteristics of Soft Links:
 * **`Cross-Filesystem Support`**: Symlinks can point to files or directories on different filesystems, including network locations.
 * **`Directories Allowed`**: Symlinks can link to both files and directories.
 * **`Broken Links`**: If the target file or directory is deleted or moved, the symlink becomes broken and points to nothing.
-* **`Permissions`**: The symlink’s permissions are independent, but access to the target is governed by the target’s permissions.
+* **`Permissions`**: On Linux, symlink mode bits are normally not used for target access; the target and containing-directory permissions govern access.
 
 * **Example**: file
 
@@ -1946,7 +1956,7 @@ ls -l report_link
 | **Cross Filesystems** | No, limited to the same filesystem | Yes, can span filesystems          |
 | **Can Link Directories** | No (generally)                 | Yes                                |
 | **Effect of Deleting** | Data persists if other hard links exist | Becomes broken if target is deleted |
-| **Permissions**   | Same as the original file       | Independent, but target controls access |
+| **Permissions**   | Same inode and mode as the other hard-link names | Symlink mode normally ignored; target/path permissions control access |
 | **Usage**         | Multiple names for the same file | Flexible references, shortcuts    |
 
 ## Cron Jobs in Linux

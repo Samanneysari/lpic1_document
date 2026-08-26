@@ -27,7 +27,10 @@ TCP reliability does not mean the application transaction succeeded, and UDP doe
 
 ### IPv4 addressing and CIDR
 
-An IPv4 address has 32 bits. A prefix length says how many leading bits identify the network.
+An IPv4 address has 32 bits. A prefix length says how many leading bits identify
+the network. Subnetting borrows prefix bits to divide an address block into
+smaller networks; CIDR expresses the resulting prefix without classful A/B/C
+assumptions.
 
 Example: `192.0.2.130/26`
 

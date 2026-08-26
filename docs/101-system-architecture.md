@@ -101,13 +101,21 @@ busctl list
 
 Do not copy `/dev/sda` blindly; substitute an existing device. `udevadm monitor` waits for events, so press `Ctrl+C` to stop it.
 
+USB administration is broader than listing devices. `lsusb` and
+`usb-devices` inspect descriptors and topology, `udevadm` observes and queries
+device events, and the optional `usb_modeswitch` utility changes the operating
+mode of supported multi-mode USB devices such as some mobile broadband
+adapters. Disconnecting a driver or changing a device's mode can remove input,
+storage or network access, so manipulate USB state only for a positively
+identified device and follow its vendor/distribution procedure.
+
 ## 101.2 Boot the system
 
 ### Boot sequence
 
 1. Firmware performs hardware initialization.
 2. Firmware selects a boot entry or boot device.
-3. A boot manager such as GRUB loads the kernel and initial RAM filesystem.
+3. A boot manager/bootloader such as GRUB loads the kernel and initial RAM filesystem.
 4. The kernel initializes memory, CPUs and drivers, then mounts the temporary root in the initramfs.
 5. Initramfs discovers the real root filesystem and switches to it.
 6. The kernel starts PID 1, normally systemd on current distributions.
@@ -152,7 +160,7 @@ Do not disable security controls merely to hide a boot error. Diagnose the error
 
 ### SysVinit, systemd and Upstart
 
-SysVinit starts scripts arranged by runlevel, traditionally under `/etc/init.d` and `/etc/rc?.d`. systemd manages typed units and dependencies. Upstart was an event-based init system used by older releases; awareness of it is sufficient for LPIC-1.
+SysVinit starts scripts arranged by runlevel, traditionally under `/etc/init.d/` and `/etc/rc?.d/`. systemd manages typed units and dependencies. Upstart was an event-based init system used by older releases; awareness of it is sufficient for LPIC-1.
 
 Legacy SysVinit systems can define the default runlevel and process actions in
 `/etc/inittab`. systemd system units are commonly supplied under

@@ -12,6 +12,17 @@
 
 Servers should normally keep the hardware clock in UTC and apply a time zone for display.
 
+Zone data is stored below `/usr/share/zoneinfo/`. `/etc/localtime` normally
+selects the active zone by copying or linking one of those files, and some
+distributions also record its name in `/etc/timezone`. Prefer the supported
+tool rather than hand-editing binary zone data:
+
+```bash
+timedatectl list-timezones
+sudo timedatectl set-timezone Europe/Berlin
+readlink -f /etc/localtime
+```
+
 ```bash
 date --iso-8601=seconds
 timedatectl status
@@ -90,6 +101,9 @@ local0.*      /var/log/example-app.log
 ```
 
 Exact default files differ: Debian-family systems commonly use `/var/log/syslog` and `/var/log/auth.log`; RPM-family systems commonly use `/var/log/messages` and `/var/log/secure`.
+
+The main rsyslog configuration is normally `/etc/rsyslog.conf`, with
+distribution or administrator drop-ins commonly below `/etc/rsyslog.d/`.
 
 `systemd-journald` collects structured journal records. rsyslog can read journal
 or syslog input and route selected messages to traditional text files or remote

@@ -10,7 +10,7 @@
 | `/etc/shadow` | Protected password hash and aging fields | hash, last change, minimum, maximum, warning, expiry |
 | `/etc/group` | Group membership and GID | name, password placeholder, GID, members |
 | `/etc/gshadow` | Protected group administration data | group password/admin/member data |
-| `/etc/skel` | Templates for newly created home directories | shell startup files and local defaults |
+| `/etc/skel/` | Templates for newly created home directories | shell startup files and local defaults |
 
 Use `getent` rather than reading local files exclusively when systems may use LDAP or another name service:
 
@@ -221,7 +221,7 @@ date
 readlink -f /etc/localtime
 ```
 
-Time zone data is under `/usr/share/zoneinfo`. Systems may also maintain `/etc/timezone`. `TZ` can override the time zone for one process:
+Time zone data is under `/usr/share/zoneinfo/`. Systems may also maintain `/etc/timezone`. `TZ` can override the time zone for one process:
 
 ```bash
 TZ=UTC date

@@ -187,7 +187,14 @@ LABEL=LABUSB /media/labusb vfat noauto,user,nodev,nosuid 0 0
 it to unmount it, whereas `users` permits any user to unmount it. The mount
 point must already exist and the policy must match the local threat model.
 
-systemd can represent mounts as `.mount` units and automatically generates units from `/etc/fstab`.
+systemd mount units end in `.mount`; the unit name is derived from the escaped
+mount path, so `/srv/data` becomes `srv-data.mount`. systemd also generates
+mount units from `/etc/fstab`. Inspect them with:
+
+```bash
+systemctl status srv-data.mount
+systemd-escape --path --suffix=mount /srv/data
+```
 
 ## 104.5 Permissions and ownership
 
@@ -221,7 +228,7 @@ Octal values are sums: read 4, write 2, execute 1. `750` means owner 7 (`rwx`), 
 | Bit | Symbol | Typical effect |
 |---|---|---|
 | setuid | `u+s`, numeric 4xxx | Executable runs with file owner's effective UID when supported |
-| setgid | `g+s`, numeric 2xxx | Executable uses file group; directory makes new entries inherit its group |
+| setgid (SGID) | `g+s`, numeric 2xxx | Executable uses file group; directory makes new entries inherit its group |
 | sticky | `+t`, numeric 1xxx | Shared directory restricts deletion/rename to permitted owners/root |
 
 ```bash
