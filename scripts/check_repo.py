@@ -108,6 +108,38 @@ def main() -> int:
             errors,
         )
 
+    persian_paths = sorted((ROOT / "fa").glob("1*.md"))
+    persian_text = "\n".join(path.read_text(encoding="utf-8") for path in persian_paths)
+    persian_objectives = set(re.findall(r"(?m)^## (\d{3}\.\d)\b", persian_text))
+    if persian_objectives != expected_objectives:
+        fail(
+            "Persian objective headings differ: "
+            f"missing={sorted(expected_objectives - persian_objectives)}, "
+            f"unexpected={sorted(persian_objectives - expected_objectives)}",
+            errors,
+        )
+    persian_examples = len(re.findall(r"(?m)^### مثال \d+:", persian_text))
+    if persian_examples < 120:
+        fail(f"expected at least 120 Persian explained examples, found {persian_examples}", errors)
+    for objective in OBJECTIVES:
+        match = re.search(
+            rf"(?ms)^## {re.escape(objective)}\b(.*?)(?=^## \d{{3}}\.\d\b|\Z)",
+            persian_text,
+        )
+        if match is None:
+            continue
+        section = match.group(1)
+        required_labels = (
+            "### مفهوم و کاربرد",
+            "**توضیح خط‌به‌خط:**",
+            "### اشتباه رایج و عیب‌یابی",
+            "### تمرین مستقل",
+            "<summary>پاسخ تشریحی؛ ابتدا خودتان حل کنید</summary>",
+        )
+        for label in required_labels:
+            if label not in section:
+                fail(f"Persian objective {objective} lacks required teaching element: {label}", errors)
+
     matrix = (ROOT / "OBJECTIVES.md").read_text(encoding="utf-8")
     for objective in OBJECTIVES:
         if f"**{objective}**" not in matrix:
@@ -165,7 +197,8 @@ def main() -> int:
     print(
         "Repository checks passed: "
         "42 objectives, two 60-question mocks, 71 chapter answers, "
-        "40 mixed questions, balanced fences, and valid relative links."
+        f"40 mixed questions, {persian_examples} Persian explained examples, "
+        "balanced fences, and valid relative links."
     )
     return 0
 

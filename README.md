@@ -14,6 +14,8 @@ The guide explains concepts before commands, breaks important commands into thei
 
 ## Start here
 
+> **مسیر فارسی از صفر:** [دورهٔ کامل فارسی LPIC-1](fa/README.md) همهٔ ۴۲ هدف فعال را با ۱۲۹ مثال، توضیح خط‌به‌خط، تمرین و آزمایشگاه آموزش می‌دهد.
+
 1. Read [How to use this guide](docs/00-how-to-use-this-guide.md).
 2. Follow the chapters in objective order.
 3. Perform labs only on a disposable virtual machine.

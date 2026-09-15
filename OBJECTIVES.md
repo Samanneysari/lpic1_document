@@ -63,7 +63,7 @@ Objective 104.4 was removed from version 5.0 and has no study requirement.
 | Done | Objective and weight | Published knowledge-area coverage | Named scope covered | Evidence |
 |---|---|---|---|---|
 | [ ] | **105.1** Shell environment (4) | Login/new-shell variables and PATH; functions; skeleton directory; global/user profiles | `.`, `source`, `/etc/bash.bashrc`, `/etc/profile`, `env`, `export`, `set`, `unset`, Bash startup files, function, alias | [105.1](docs/105-shells-shell-scripting.md#1051-customize-the-shell-environment), [LAB-105-1](labs/README.md#lab-105-1-shell-environment) |
-| [ ] | **105.2** Simple scripts (4) | sh loops/tests; substitution/status/chaining; conditional mail; shebang; location, ownership, execute and SUID handling | `for`, `while`, `test`, `if`, `read`, `seq`, `exec`, `||`, `&&` | [105.2](docs/105-shells-shell-scripting.md#1052-write-and-customize-simple-scripts), [LAB-105-2](labs/README.md#lab-105-2-defensive-bash-script) |
+| [ ] | **105.2** Simple scripts (4) | sh loops/tests; substitution/status/chaining; conditional mail; shebang; location, ownership, execute and SUID handling | `for`, `while`, `test`, `if`, `read`, `seq`, `exec`, `\|\|`, `&&` | [105.2](docs/105-shells-shell-scripting.md#1052-write-and-customize-simple-scripts), [LAB-105-2](labs/README.md#lab-105-2-defensive-bash-script) |
 
 ### Topic 106: User Interfaces and Desktops
 

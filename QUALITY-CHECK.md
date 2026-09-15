@@ -28,6 +28,7 @@ of an exam or employment result.
 | Technical corrections | Pass | BRE/ERE alternation, APT upgrade behavior, symlink modes and missing official terms were corrected in this review. |
 | Destructive-command safety | Pass | Storage, boot, service, network and key-management sections include verification or recovery cautions. |
 | Source separation | Pass | Official/upstream references are collected in `REFERENCES.md`; live exam questions are not claimed or copied. |
+| Persian self-study path | Pass | `fa/` covers all 42 objectives with 129 reproducible examples, line-by-line explanations, verification, mistakes, exercises and labs. |
 
 ## Quantitative inventory
 
@@ -39,6 +40,7 @@ of an exam or employment result.
 - Mixed assessment: **40 items / 90 points**
 - Timed mocks: **2 × 60 questions**
 - Total question items: **231**
+- Persian explained examples: **129**
 
 ## What “complete” means here
 
