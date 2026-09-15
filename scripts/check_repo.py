@@ -108,6 +108,32 @@ def main() -> int:
             errors,
         )
 
+    worked_paths = sorted((ROOT / "worked-examples").glob("1*.md"))
+    worked_text = "\n".join(path.read_text(encoding="utf-8") for path in worked_paths)
+    worked_objectives = set(re.findall(r"(?m)^## (\d{3}\.\d)\b", worked_text))
+    if worked_objectives != expected_objectives:
+        fail(
+            "worked-example objectives differ: "
+            f"missing={sorted(expected_objectives - worked_objectives)}, "
+            f"unexpected={sorted(worked_objectives - expected_objectives)}",
+            errors,
+        )
+    worked_examples = len(re.findall(r"(?m)^### Worked example \d+:", worked_text))
+    explanations = len(re.findall(r"(?m)^\*\*Line-by-line explanation:\*\*$", worked_text))
+    verification_notes = len(re.findall(r"(?m)^\*\*What to verify:\*\*", worked_text))
+    if worked_examples != 126:
+        fail(f"expected 126 worked examples, found {worked_examples}", errors)
+    if explanations != worked_examples:
+        fail(
+            f"expected one line-by-line explanation per example, found {explanations}",
+            errors,
+        )
+    if verification_notes != worked_examples:
+        fail(
+            f"expected one verification note per example, found {verification_notes}",
+            errors,
+        )
+
     matrix = (ROOT / "OBJECTIVES.md").read_text(encoding="utf-8")
     for objective in OBJECTIVES:
         if f"**{objective}**" not in matrix:
@@ -164,7 +190,7 @@ def main() -> int:
 
     print(
         "Repository checks passed: "
-        "42 objectives, two 60-question mocks, 71 chapter answers, "
+        "42 objectives, 126 explained examples, two 60-question mocks, 71 chapter answers, "
         "40 mixed questions, balanced fences, and valid relative links."
     )
     return 0

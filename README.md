@@ -16,10 +16,11 @@ The guide explains concepts before commands, breaks important commands into thei
 
 1. Read [How to use this guide](docs/00-how-to-use-this-guide.md).
 2. Follow the chapters in objective order.
-3. Perform labs only on a disposable virtual machine.
-4. Complete the exercises before opening the answer key.
-5. Use the [coverage matrix](OBJECTIVES.md) to track progress.
-6. Finish with the [junior-readiness checklist](JUNIOR-READINESS.md) and both timed mocks.
+3. Use the [worked-example companion](worked-examples/README.md) after each objective. It provides 126 beginner-friendly examples, with every command line explained.
+4. Perform labs only on a disposable virtual machine.
+5. Complete the exercises before opening the answer key.
+6. Use the [coverage matrix](OBJECTIVES.md) to track progress.
+7. Finish with the [junior-readiness checklist](JUNIOR-READINESS.md) and both timed mocks.
 
 ## Exam 101-500
 
@@ -43,6 +44,7 @@ The guide explains concepts before commands, breaks important commands into thei
 
 ## Practice material
 
+- [126 line-by-line worked examples](worked-examples/README.md)
 - [Hands-on labs](labs/README.md)
 - [Chapter exercises and mock questions](exercises/questions.md)
 - [Answer key and explanations](exercises/answers.md)

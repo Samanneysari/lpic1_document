@@ -1,9 +1,19 @@
 # LPIC-1 Quality Check
 
-Last objective review: **2026-08-26**
+Last content review: **2026-09-15**
 
 This is an evidence record, not an official LPI endorsement and not a guarantee
 of an exam or employment result.
+
+## Review conclusion
+
+Before this review, the repository covered the published objectives, but the
+beginner experience was uneven: several command blocks did not have an exact
+explanation for every line. The new worked-example companion closes that gap
+with three deliberately small examples for every active objective. The guide is
+now a complete self-study foundation for the published LPIC-1 v5.0 scope when
+the reader follows the chapters, worked examples, labs, and assessments in
+order. Reading alone still cannot replace hands-on practice.
 
 ## Scope baseline
 
@@ -19,6 +29,7 @@ of an exam or employment result.
 |---|---|---|
 | Objective headings | Pass | All 42 active objectives have matching chapter sections. |
 | Fine-grained scope | Pass | `OBJECTIVES.md` maps every objective's knowledge areas and named official scope to chapter/lab evidence. |
+| Beginner worked examples | Pass | All 42 active objectives have three small examples; every command line is followed by a plain-English explanation and a verification note. |
 | Objective-version match | Pass | Repository and official current pages both identify version 5.0 and codes 101-500/102-500. |
 | Exam 101 practice | Pass | `mock-101.md` has 60 original questions allocated exactly by objective weight, with a separate explained key. |
 | Exam 102 practice | Pass | `mock-102.md` has 60 original questions allocated exactly by objective weight, with a separate explained key. |
@@ -33,6 +44,7 @@ of an exam or employment result.
 
 - Objective-aligned chapters: **10**
 - Active objective sections: **42**
+- Line-by-line worked examples: **126**
 - Chapter labs: **10**
 - Additional lab scenarios: **23**
 - Chapter review questions: **71**

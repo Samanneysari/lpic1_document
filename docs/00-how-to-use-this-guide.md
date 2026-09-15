@@ -81,12 +81,13 @@ Verification is part of the task, not an optional extra.
 For every objective:
 
 1. Read the theory.
-2. Re-type examples instead of copying them blindly.
-3. Predict the output before pressing Enter.
-4. Run the lab.
-5. Break the configuration deliberately in a snapshot.
-6. Diagnose and repair it.
-7. Complete the exercises.
+2. Open the matching section in the [worked-example companion](../worked-examples/README.md).
+3. Re-type examples instead of copying them blindly.
+4. Predict the output before pressing Enter.
+5. Run the lab.
+6. Break the configuration deliberately in a snapshot.
+7. Diagnose and repair it.
+8. Complete the exercises.
 
 ## Exam command awareness
 

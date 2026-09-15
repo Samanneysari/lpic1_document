@@ -249,7 +249,8 @@ runlevel
 | 5                    | graphical.target    |
 | 6                    | reboot.target       |
 
-Checking Current Runlevel (Target) in systemd:
+Checking the default target selected for future normal boots (not a complete
+list of targets active right now):
 
 ```text
 systemctl get-default
@@ -877,11 +878,15 @@ sudo mkfs.ext4 /dev/vdb1
 * 3. Check it only while it is unmounted:
 
 ```bash
-sudo umount /dev/vdb1 2>/dev/null || true
+sudo umount /dev/vdb1
+findmnt /dev/vdb1
 sudo fsck -f /dev/vdb1
 ```
 
-Never run a repair-mode `fsck` on a mounted read-write filesystem. For XFS, use XFS-specific tools such as `xfs_repair` while the filesystem is unmounted.
+Continue to `fsck` only when `umount` succeeded and `findmnt` confirms that the
+filesystem is no longer mounted. Never hide an unmount failure with `|| true`.
+Never run a repair-mode `fsck` on a mounted read-write filesystem. For XFS, use
+XFS-specific tools such as `xfs_repair` while the filesystem is unmounted.
 
 #### Mounting
 

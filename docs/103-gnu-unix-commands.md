@@ -445,7 +445,7 @@ Globs match pathnames in the shell. Regular expressions describe text patterns f
 | `+` | One or more in extended regex |
 | `?` | Zero or one in extended regex |
 | `{m,n}` | Repetition range in extended regex |
-| `(one|two)` | Group and alternation in extended regex |
+| `(one\|two)` | Group and alternation in extended regex |
 
 ```bash
 grep '^root:' /etc/passwd
