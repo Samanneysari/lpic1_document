@@ -9,10 +9,27 @@
 
 Linux represents storage as block devices. A partition table describes regions of a disk; a filesystem organizes files inside a partition or logical volume.
 
+A **block device** reads and writes numbered chunks of data, typically a disk. Its **logical block size** is the unit exposed for addressing by the device; a filesystem also has its own allocation block size. These are related but need not be identical. In `dd bs=1M`, `bs` is the size per copy operation, not proof of the disk's physical sector size. A **partition** is a named region of a disk. A **partition table** records the regions; **MBR** is an older table format, while **GPT** supports more entries and includes backup metadata. Neither format creates files by itself. `fdisk` edits the partition table; `mkfs.ext4` creates a filesystem in a chosen region. Finally, `mount` connects that filesystem to a directory in the Linux tree.
+
+Read-only inspection, one command per line:
+
 ```bash
-lsblk -o NAME,PATH,SIZE,TYPE,PTTYPE,FSTYPE,MOUNTPOINTS
+lsblk -o NAME,SIZE,TYPE,LOG-SEC,PHY-SEC,PTTYPE,FSTYPE,MOUNTPOINTS
+```
+
+`lsblk` shows block devices; `-o` selects columns. `LOG-SEC` and `PHY-SEC` are logical and physical sector sizes, `PTTYPE` is the partition-table type, `FSTYPE` is the filesystem type, and `MOUNTPOINTS` shows where it is attached. A blank field is possible and does not by itself indicate a broken disk.
+
+```bash
+stat -f .
+```
+
+`stat` inspects metadata; `-f` requests information about the filesystem containing `.` rather than one file; the output can include filesystem block-size fields. Distinguish the filesystem's block size from the device sector sizes shown by `lsblk` and from `dd`'s chosen copy size.
+
+```bash
 sudo fdisk -l
 ```
+
+`sudo` requests privileged execution under local policy; `fdisk` is the partition-table tool; `-l` **lists** disks and partitions without editing them. Starting interactive `fdisk /dev/...` is a different operation; writing changes there can destroy access to data. Match model, size and identifier before any lab write.
 
 `PTTYPE` can reveal `dos`/MBR or `gpt`. Names differ by device: `/dev/vdb1`, `/dev/sdb1`, and `/dev/nvme1n1p1` can all be first partitions.
 
@@ -83,6 +100,8 @@ sudo swapoff /dev/vdb2
 
 `mkswap` writes a swap signature, `swapon` activates it, and `swapoff` deactivates it. A swap entry in `/etc/fstab` is activated with `swapon --all`, not `mount -a`.
 
+**Swap** is disk-backed space the kernel may use for memory pages it does not need in RAM right now; it is far slower than RAM and is not a substitute for sufficient memory. In the example, `mkswap -L LABSWAP` writes a swap signature and label on the selected disposable partition; `swapon` enables that exact partition; `swapon --show` verifies active swap; `swapoff` disables it. Never use `mkswap` on a partition containing files you need.
+
 ## 104.2 Maintain filesystem integrity
 
 ### Space and inode monitoring
@@ -100,6 +119,26 @@ du -sh /var/* 2>/dev/null
 | `du -sh` | Summarizes space reachable under each argument |
 
 A filesystem can report “no space left” because blocks are full or because inodes are exhausted.
+
+An **inode** is a filesystem record containing a file's metadata, such as ownership, permissions, size and data locations. A directory maps a **name** to an inode number. An inode number is unique within one filesystem, not globally across the machine. A hard link gives the same inode another name. Some filesystems represent or account for metadata differently, but these concepts explain ordinary Unix file operations. `df` reports free/used space for a mounted filesystem; `du` walks files reachable from a path and adds their allocated usage. They can differ because of metadata, snapshots, deleted files still open by a process or inaccessible paths.
+
+```bash
+df -h .
+```
+
+`df` reports filesystem capacity; `-h` uses readable units; `.` selects the filesystem containing your current directory.
+
+```bash
+du -sh .
+```
+
+`du` walks your current directory; `-s` gives one summary and `-h` uses readable units. This is usage under the directory, not the whole disk's free space.
+
+```bash
+stat hello.txt
+```
+
+`stat` displays metadata for the named file, including inode number, allocated blocks, ownership and timestamps. Create `hello.txt` in the [practice area](00-linux-foundations.md#4-your-first-shell-session) first. `Access` (atime) is last recorded read, `Modify` (mtime) is the last content modification, and `Change` (ctime) is the last **inode-status** change, including a content or permission change. **ctime is not creation time**. Some filesystems show `Birth` for creation; access-time updates may be deferred or disabled by mount policy.
 
 ### Offline repair principle
 
@@ -129,12 +168,16 @@ Always read the local manual and maintain a verified backup. A repair tool can d
 
 Mounting attaches a filesystem to the single Linux directory tree.
 
+The directory used for attachment is a **mount point**. Before mounting, `/mnt/labdata` is just a directory; after mounting, paths below it refer to the attached filesystem. Files previously visible beneath that directory can be hidden until unmounting. `lsblk` shows devices and mount points; `findmnt` shows the active mount relationship. A filesystem type such as ext4 describes how files are organized; mounting makes that organization accessible at a path.
+
 ```bash
 sudo mkdir -p /mnt/labdata
 sudo mount /dev/vdb1 /mnt/labdata
 findmnt /mnt/labdata
 sudo umount /mnt/labdata
 ```
+
+In the lab block above, `mkdir -p` makes the mount-point directory, `mount` attaches `/dev/vdb1` there, `findmnt` verifies the active attachment, and `umount` detaches it. These commands are **separate lines**: check that the example partition exists, contains the expected filesystem and is disposable before running `mount`. Read-only `findmnt /` is safe to try on your current system without attaching anything.
 
 The command is `umount`, not `unmount`. An unmount can fail when a process has an open file or working directory there:
 
@@ -200,6 +243,14 @@ systemd-escape --path --suffix=mount /srv/data
 
 ### Permission model
 
+Regular files contain ordinary data. A directory maps names to files. A symbolic link stores a target path. A block device represents block-oriented I/O; a character device handles a stream of bytes; a FIFO (named pipe) passes a stream between processes; a socket is a communication endpoint. The first character of `ls -l` commonly shows `-`, `d`, `l`, `b`, `c`, `p` or `s` respectively. A hard link is an additional name for a file, not a separate file type.
+
+```bash
+ls -ld . /dev/null
+```
+
+`ls` lists metadata; `-l` gives the detailed type/permission string; `-d` shows the directory entry `.` itself. Expect `d` for `.` and normally `c` for the character device `/dev/null`.
+
 ```text
 -rwxr-x--- 1 alice developers 1200 Jan 1 12:00 deploy.sh
 ```
@@ -223,6 +274,22 @@ chmod 750 deploy.sh
 
 Octal values are sums: read 4, write 2, execute 1. `750` means owner 7 (`rwx`), group 5 (`r-x`), others 0.
 
+Practice on a file you own, created in your [practice directory](00-linux-foundations.md#4-your-first-shell-session):
+
+```bash
+chmod 640 hello.txt
+```
+
+`chmod` changes permission bits; `640` gives the owner read/write (`6`), the group read (`4`) and others no access (`0`); `hello.txt` is the target. `ls -l hello.txt` verifies the result. The owner can normally change the mode of their own file.
+
+```bash
+stat -c '%U:%G %a %n' hello.txt
+```
+
+`stat` reads metadata; `-c` selects a format; `%U` is owner name, `%G` group name, `%a` octal mode and `%n` filename. This command does not change anything.
+
+In a disposable VM, an administrator can change ownership with `sudo chown alice:developers hello.txt`: `sudo` requests permission to run as root, `chown` changes ownership, `alice:developers` sets user and group, and `hello.txt` is the target. The account and group must exist. Replacing them with names from another machine will fail; changing ownership can also remove your own ability to edit the file.
+
 ### Special bits
 
 | Bit | Symbol | Typical effect |
@@ -230,6 +297,8 @@ Octal values are sums: read 4, write 2, execute 1. `750` means owner 7 (`rwx`), 
 | setuid | `u+s`, numeric 4xxx | Executable runs with file owner's effective UID when supported |
 | setgid (SGID) | `g+s`, numeric 2xxx | Executable uses file group; directory makes new entries inherit its group |
 | sticky | `+t`, numeric 1xxx | Shared directory restricts deletion/rename to permitted owners/root |
+
+On a writable shared directory, the **sticky bit** lets users create files but stops one ordinary user from deleting or renaming another user's entries merely because the directory is writable. It does not encrypt files or make their contents private. `/tmp` is a common example. The directory's other permissions still apply.
 
 ```bash
 sudo install -d -o root -g developers -m 2775 /srv/team
@@ -255,6 +324,8 @@ With a typical requested file mode of 666 and directory mode of 777, umask 027 c
 
 A hard link is another directory entry for the same inode. A symbolic link is a separate file containing a path to a target.
 
+Deleting one hard-link name leaves the content reachable through the other name until all links are removed and no process still holds the file open. A symbolic link can point across filesystems and can become dangling when its target path disappears.
+
 ```bash
 printf 'data\n' > original.txt
 ln original.txt hard-link.txt
@@ -274,6 +345,8 @@ Relative symbolic targets are resolved relative to the directory containing the 
 ## 104.7 Find and place system files
 
 ### FHS overview
+
+Linux uses **one directory tree** beginning at `/`, even when files come from several disks. A slash separates path components: `/home/alice/report.txt` names a file under `home`, then `alice`. `/` is the root directory; `/root` is the root account's home and means something different. `ls /` lists top-level names; `cd /etc` changes your shell into the configuration directory; `pwd` confirms your current location. The Filesystem Hierarchy Standard (FHS) describes conventional uses for important directories, though distributions can differ.
 
 | Path | Purpose |
 |---|---|

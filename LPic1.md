@@ -15,8 +15,7 @@ Simply put, the operating system is the backbone that makes your computer work f
 
 ## Firmware
 
-Firmware is the software on your hardware that runs it; Think of it as a built-in OS or driver for your hardware. Motherboards need some firmware to be able to work too.
-Firmware is a type of software that lives in hardware. Software is any program or group of programs run by a computer.
+Firmware is software stored in a device's nonvolatile memory. Motherboard firmware runs before Linux to initialize enough hardware and select a boot path. Other devices can have their own firmware. It is not the Linux operating system or a Linux device driver; see the [beginner foundations](docs/00-linux-foundations.md#1-what-a-computer-runs) for the distinction.
 
 ```text
 sudo dmidecode -t bios
@@ -25,8 +24,7 @@ sudo dmidecode -t bios
 ## BIOS
 
 BIOS is like your computer’s morning wake-up routine. Imagine when you turn on your computer—it doesn’t just start working instantly, right? It needs a moment to get ready, kind of like how you might stretch or grab a coffee when you wake up.
-So, BIOS is a tiny little program that lives on a chip inside your computer. When you hit the power button, it’s the first thing that jumps into action. It’s like the computer’s personal assistant, checking to make sure everything’s okay—like the keyboard, mouse, and screen—and making sure they’re all connected and ready to work together.
-Once it’s done with that quick check, BIOS says, “Alright, everything looks good!” and passes the job over to the operating system (you know, like Windows or macOS). That’s the main software that lets you do all the fun stuff—browsing the internet, playing games, or typing up a document.
+Legacy BIOS is motherboard firmware that begins running when the machine powers on. It initializes essential hardware, chooses a boot device and starts the next stage of the boot chain. That next stage commonly loads a bootloader, which loads the kernel; BIOS does not normally hand control straight to a fully running operating system. Many modern machines use UEFI instead of legacy BIOS.
 
 ## UEFI
 
@@ -74,7 +72,7 @@ The power supply sends electricity to the motherboard, which "wakes up" the syst
 
 BIOS: Runs a Power-On Self-Test (POST) to check essential hardware like the CPU, RAM, and storage devices.
 
-UEFI: Does a similar hardware check but faster, with added features like Secure Boot to ensure only trusted software runs.
+UEFI: Initializes hardware and chooses a boot entry. It can support Secure Boot, which checks signatures in parts of the boot chain; it does not ensure all software on the machine is trustworthy or always boot faster.
 
 * **`Purpose`**: Confirms that all critical hardware is functioning before moving forward.
 

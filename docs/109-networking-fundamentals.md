@@ -1,5 +1,25 @@
 # Topic 109: Networking Fundamentals
 
+`ss` and the older `netstat` help answer “which network endpoints are open?” A **socket** is a process's communication endpoint. A **listening** socket waits for connections; a connection to a remote address is a different state. These commands report what the local kernel knows, not what an outside client can reach through a firewall.
+
+```bash
+ss -lnt
+```
+
+`ss` displays sockets; `-l` limits output to listeners; `-n` shows numeric addresses and ports; `-t` selects TCP. Check the `Local Address:Port` column. `127.0.0.1` is local-only loopback, while `0.0.0.0` means all local IPv4 addresses; firewall rules can still block outside access.
+
+```bash
+ss -lnu
+```
+
+The same options select listening UDP sockets with `-u`; UDP has no TCP-style connection handshake. On a host with no listeners, the result can be only a header.
+
+```bash
+netstat -lnt
+```
+
+`netstat` is a legacy alternative with similar `-l`, `-n` and `-t` options. It may be absent until the optional `net-tools` package is installed. Prefer `ss` in daily work; know both because the LPIC-1 objectives include older tools. `sudo ss -lntup` can also show owning processes (`-p`), subject to permissions.
+
 ## 109.1 Internet protocol fundamentals
 
 ### Layers and encapsulation

@@ -1,5 +1,7 @@
 # How to Use This Guide
 
+If Linux and operating systems are new to you, first read [Linux foundations](00-linux-foundations.md). It defines the hardware, firmware, kernel, distribution, boot and user concepts used below.
+
 ## What LPIC-1 tests
 
 LPIC-1 validates distribution-neutral Linux administration. It is not limited to Ubuntu, Debian, Red Hat, or SUSE. You must recognize both modern tools and legacy tools explicitly named in the official objectives.

@@ -2,6 +2,22 @@
 
 ## 107.1 User and group administration
 
+A **user** is an account with a numeric UID. A **group** has a numeric GID and helps share access. A user's primary group is recorded in the account database; supplementary memberships are listed separately. A process uses the credentials of the account that starts it, subject to privilege changes. The special `root` account has UID 0. `sudo` is a command that applies a local authorization policy to run a command as another account, usually root; it is not a separate species of user. See [Linux foundations](00-linux-foundations.md#5-people-and-permissions) before changing accounts.
+
+Observe your own identity first:
+
+```bash
+id
+```
+
+`id` displays the current UID, primary group and supplementary groups. It does not change membership.
+
+```bash
+groups
+```
+
+`groups` displays names of groups for the current account. `groups alice` queries an existing account named `alice`. Membership added with `usermod -aG` usually requires a new login session to affect already running processes.
+
 ### Account databases
 
 | File | Purpose | Important fields |

@@ -14,13 +14,15 @@ The guide explains concepts before commands, breaks important commands into thei
 
 ## Start here
 
-1. Read [How to use this guide](docs/00-how-to-use-this-guide.md).
-2. Follow the chapters in objective order.
-3. Use the [worked-example companion](worked-examples/README.md) after each objective. It provides 126 beginner-friendly examples, with every command line explained.
-4. Perform labs only on a disposable virtual machine.
-5. Complete the exercises before opening the answer key.
-6. Use the [coverage matrix](OBJECTIVES.md) to track progress.
-7. Finish with the [junior-readiness checklist](JUNIOR-READINESS.md) and both timed mocks.
+1. If you are new to computers, read [Linux foundations](docs/00-linux-foundations.md): operating systems, GNU, distributions, firmware, boot, first commands, users and groups.
+2. Read [How to use this guide](docs/00-how-to-use-this-guide.md).
+3. Follow the chapters in objective order.
+   Use the [notebook topic map](docs/00-notebook-topic-map.md) to find a concept by category.
+4. Use the [worked-example companion](worked-examples/README.md) after each objective. It provides 126 beginner-friendly examples, with every command line explained.
+5. Perform labs only on a disposable virtual machine.
+6. Complete the exercises before opening the answer key.
+7. Use the [coverage matrix](OBJECTIVES.md) to track progress.
+8. Finish with the [junior-readiness checklist](JUNIOR-READINESS.md) and both timed mocks.
 
 ## Exam 101-500
 

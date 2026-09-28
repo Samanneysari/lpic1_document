@@ -8,6 +8,8 @@ This chapter covers every objective in Topic 101. It extends the introductory ha
 
 Linux discovers hardware through firmware tables and device buses. The kernel loads a suitable driver, exposes information through virtual filesystems, and creates device nodes that programs can use.
 
+For the beginner's distinction between firmware, kernel, OS and distribution, begin with [Linux foundations](00-linux-foundations.md). A **bus** is a way components communicate, such as PCI or USB. A **device node** is a special pathname through which a program asks the kernel to operate a device; it is not the hardware itself.
+
 | Location | Purpose | Example |
 |---|---|---|
 | `/proc` | Runtime process and kernel views | `/proc/cpuinfo`, `/proc/meminfo`, `/proc/cmdline` |
@@ -15,6 +17,14 @@ Linux discovers hardware through firmware tables and device buses. The kernel lo
 | `/dev` | Device nodes used for I/O | `/dev/sda`, `/dev/nvme0n1`, `/dev/tty` |
 
 These directories are interfaces to kernel data. Most files in `/proc` and `/sys` are generated dynamically and do not occupy normal disk space.
+
+`procfs` (`/proc`) is a live view of processes and kernel state. A numbered directory such as `/proc/1` describes PID 1. `sysfs` (`/sys`) exposes a structured view of devices, drivers and kernel objects; it can include writable controls, so do not change entries just to explore. `/dev` holds device access nodes, commonly managed by `udev`. Observe the difference:
+
+```bash
+ls -ld /proc/1 /sys/class/net /dev/null
+```
+
+`ls` lists paths; `-l` shows details and `-d` reports the directory itself rather than its contents. `/proc/1` represents a process, `/sys/class/net` points into the network-device view, and `/dev/null` is a device node that discards written data.
 
 ### Firmware settings
 
@@ -93,6 +103,8 @@ Persistent module requests can be placed in `/etc/modules-load.d/*.conf`. Module
 
 `udev`, normally provided by `systemd-udevd`, receives kernel device events and manages device nodes, permissions and stable links. D-Bus is a message bus that lets system and desktop processes communicate; services such as NetworkManager use it.
 
+Think of D-Bus as a shared addressable channel for **messages between processes**. For example, a settings program can ask NetworkManager for network status without reading its private memory; NetworkManager replies over the bus. D-Bus has a system bus for system services and usually a session bus for one user's desktop session. It is not the hardware bus (PCI/USB), not a filesystem and not the Linux kernel. A `dbus-daemon` or `dbus-broker` implementation handles routing; the exact processes differ by distribution. `busctl list` displays services registered on the bus, when systemd's `busctl` is installed.
+
 ```bash
 udevadm info --query=all --name=/dev/sda
 udevadm monitor --kernel --udev
@@ -123,6 +135,8 @@ identified device and follow its vendor/distribution procedure.
 8. Login services and applications become available.
 
 The initramfs is a small temporary userspace used before the real root filesystem is available. It commonly contains storage, encryption, RAID or LVM tools and drivers needed to find root.
+
+**Kernel ring buffer** means a finite area of memory for kernel messages. “Ring” describes reuse of space: when capacity is exhausted, new messages can replace old ones. `dmesg` reads messages available through the kernel log interface. It may include startup and later device events; it is not a guaranteed full history. A journal or log file can retain messages separately if configured to do so.
 
 ### Inspect the current boot
 

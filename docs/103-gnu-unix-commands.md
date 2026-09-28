@@ -4,6 +4,8 @@ Topic 103 carries substantial exam weight. Practice every command in a normal us
 
 ## 103.1 Work on the command line
 
+If `ls`, `cd`, paths and files are completely new, first try the [first shell session](00-linux-foundations.md#4-your-first-shell-session).
+
 ### Command parsing
 
 The shell reads text, applies quoting and expansions, performs redirections, and then executes a built-in, function or external program.
@@ -76,6 +78,14 @@ history 10
 of options and backslash escapes varies. Prefer `printf` when exact portable
 formatting matters.
 
+`ls` lists entries in a directory (`ls -l` adds detailed columns). `cd` changes the current shell's directory (`cd ..` moves to its parent). `pwd` prints where you are. On some systems `ll` is a user-defined alias, often for `ls -l`; it is not a portable command. Confirm with `type ll` before relying on it. An **alias** is a short name expanded by an interactive shell, not a new executable:
+
+```bash
+alias ll='ls -l'
+```
+
+`alias` defines the name; `ll` is the name; `'ls -l'` is the replacement. Run `type ll` to check it. This definition lasts for the current shell only; shell startup files can define it for later sessions. In scripts, call `ls -l` explicitly instead of assuming aliases are enabled.
+
 `PATH` is a colon-separated search list:
 
 ```bash
@@ -113,6 +123,26 @@ Manual section matters: `passwd(1)` is a command, while `passwd(5)` describes th
 A filter reads records, transforms or selects them, and writes a result. Unless documented otherwise, filters do not edit the original file.
 
 ### Viewing and selecting
+
+`cat` prints a whole file; `head` prints the beginning; `less` lets you scroll in either direction without loading a file into an editor. The older `more` is also a pager and commonly moves forward one screen at a time. `most` is an optional pager and may need a separate package; do not expect it on every host. In `less`, press `Space` for the next page, `b` for the previous page, `/word` to search and `q` to leave.
+
+```bash
+head -n 3 /etc/passwd
+```
+
+`head` selects the start of a file; `-n 3` asks for three lines; `/etc/passwd` contains public account metadata, not plaintext passwords. Each output line is one account record.
+
+```bash
+nl -ba /etc/passwd | less
+```
+
+`nl` numbers lines; `-ba` also numbers blank lines; `|` hands the numbered output to `less` for scrolling. Press `q` to leave. For a short file, `more /etc/passwd` is another way to page through it.
+
+```bash
+more /etc/passwd
+```
+
+`more` opens this account file one screen at a time; press `Space` to advance and `q` to exit. If `most` is installed, `most /etc/passwd` opens the same file in that optional pager; use `command -v most` to see whether it is available. Pager keys can differ, so use its help screen when needed.
 
 ```bash
 cat file.txt
@@ -164,6 +194,12 @@ wc -l -w -c file.txt
 
 `uniq` removes or counts adjacent duplicate lines; sort first when duplicates may be separated.
 
+```bash
+printf '%s\n' pear apple pear | sort | uniq -c
+```
+
+`printf` creates three lines; the first pipe gives them to `sort`, which places identical names next to each other; the second pipe gives them to `uniq -c`, which counts adjacent equal lines. Expect `1 apple` and `2 pear` (spacing may vary).
+
 ### Binary and numeric views
 
 ```bash
@@ -197,6 +233,38 @@ These write decompressed content to standard output without replacing the compre
 
 ### Create, copy, move and remove
 
+In a disposable practice directory, these commands change names and contents, not the partition table:
+
+```bash
+touch note.txt
+```
+
+`touch` creates an empty `note.txt` if it does not exist. If it exists, `touch` updates its access and modification timestamps by default without replacing its contents. Check with `stat note.txt`.
+
+```bash
+mkdir -p drafts
+```
+
+`mkdir` creates a directory; `-p` accepts an existing directory and creates missing parent directories. `drafts` is relative to the current directory; check with `pwd` first.
+
+```bash
+cp -i note.txt drafts/note.txt
+```
+
+`cp` copies the source `note.txt` to the destination under `drafts`; `-i` asks before overwriting an existing destination. The original remains.
+
+```bash
+mv -i drafts/note.txt drafts/renamed.txt
+```
+
+`mv` moves or renames the source; `-i` asks before overwriting an existing destination. Verify that the old path is gone and the new path exists with `ls -l drafts`.
+
+```bash
+rm -i drafts/renamed.txt
+```
+
+`rm` removes that directory entry; `-i` asks for confirmation. It does not remove the `drafts` directory; `rmdir drafts` removes it if it is empty. Avoid `rm -r` until you understand recursive removal and have inspected the exact target.
+
 ```bash
 mkdir -p project/{src,docs,backup}
 touch project/docs/notes.txt
@@ -221,6 +289,8 @@ printf '<%s>\n' project/*.txt
 ```
 
 ### Globbing
+
+A **wildcard** is a character such as `*` used by the shell to expand matching pathnames *before* it runs a command. It is different from a regular expression used by `grep` or `sed`. Preview matches with `printf '<%s>\n' ./*.txt`; quotes around `./*.txt` would stop wildcard expansion. If nothing matches, default Bash can leave the literal pattern unchanged. Do not use an unchecked wildcard with `rm`.
 
 | Pattern | Matches |
 |---|---|
@@ -276,6 +346,8 @@ tar -cJf project.tar.xz project/
 List an untrusted archive before extraction and extract into an empty disposable directory.
 
 Individual compressors:
+
+An **archive** collects multiple files and their names into one file, for example `tar -cf files.tar dir/`. **Compression** reduces bytes, for example `gzip files.tar` creates `files.tar.gz` and normally removes the original `.tar`. A `.gz` file is not automatically a multi-file archive. `tar -czf files.tar.gz dir/` combines archiving and gzip compression.
 
 ```bash
 gzip -k file.txt
@@ -402,6 +474,8 @@ SIGTERM requests orderly termination and can be handled. SIGKILL cannot be handl
 
 `pkill -x` requires an exact process name. Check matches first with `pgrep -a -x process-name`.
 
+In `ps aux`, `a` includes processes with terminals belonging to other users, `u` requests a user-oriented display, and `x` includes processes without a controlling terminal. Read `USER`, `PID`, `%CPU`, `%MEM`, `STAT` and `COMMAND`; `STAT` is the state, not an error code. These BSD-style letters are used without a leading dash. `kill` sends a **signal** to a PID; despite its name, `kill -TERM` first asks a process to exit cleanly.
+
 ### Continue after logout
 
 ```bash
@@ -461,6 +535,14 @@ notation. In BRE, grouping and alternation commonly need backslashes, for
 example `\(one\|two\)`; in ERE the equivalent is `(one|two)`.
 
 ### sed substitution and deletion
+
+`sed` is a stream editor: it reads input line by line, applies instructions and writes output. In `s/old/new/g`, `s` means substitute, the slashes separate pattern and replacement, and `g` replaces every occurrence on a line. Without `g`, only the first match on each line changes.
+
+```bash
+printf '%s\n' 'red red' | sed 's/red/blue/g'
+```
+
+`printf` supplies one line; `|` passes it to `sed`; the quoted substitution changes both words. The result is `blue blue`. No source file is edited.
 
 ```bash
 sed 's/old/new/' file.txt
